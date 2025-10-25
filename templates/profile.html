@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Profile - TurmericTech') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="modern-navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand-section">
+                <a href="{{ url_for('home') }}" class="brand-logo">
+                    <i class="fas fa-seedling brand-icon"></i>
+                    <div class="brand-text">
+                        <div class="brand-title">TurmericTech</div>
+                        <div class="brand-subtitle">Fair Trading</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="main-navigation">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="{{ url_for('home') }}" class="nav-link">
+                            <i class="fas fa-home nav-icon"></i>
+                            <span class="nav-text">Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#profile" class="nav-link active">
+                            <i class="fas fa-user nav-icon"></i>
+                            <span class="nav-text">Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('farmer_profile') }}" class="nav-link">
+                            <i class="fas fa-tractor nav-icon"></i>
+                            <span class="nav-text">Farm</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('cooperatives') }}" class="nav-link">
+                            <i class="fas fa-users nav-icon"></i>
+                            <span class="nav-text">Cooperatives</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="navbar-actions">
+                <div class="user-section">
+                    <div class="user-menu">
+                        <button class="user-btn">
+                            <i class="fas fa-user-circle user-icon"></i>
+                            <span class="user-name">{{ session.get('user', 'User') }}</span>
+                            <i class="fas fa-chevron-down dropdown-icon"></i>
+                        </button>
+                        <div class="user-dropdown">
+                            <a href="{{ url_for('profile') }}" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                My Profile
+                            </a>
+                            <a href="{{ url_for('farmer_profile') }}" class="dropdown-item">
+                                <i class="fas fa-tractor"></i>
+                                Farm Profile
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('logout') }}" class="dropdown-item logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-nav-overlay" id="mobileNav">
+            <div class="mobile-nav-content">
+                <div class="mobile-nav-header">
+                    <div class="mobile-brand">
+                        <i class="fas fa-seedling"></i>
+                        TurmericTech
+                    </div>
+                    <button class="mobile-nav-close" onclick="toggleMobileMenu()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <ul class="mobile-nav-menu">
+                    <li class="mobile-nav-item">
+                        <a href="{{ url_for('home') }}" class="mobile-nav-link">
+                            <i class="fas fa-home"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="mobile-nav-item">
+                        <a href="#profile" class="mobile-nav-link active">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="mobile-nav-item">
+                        <a href="{{ url_for('farmer_profile') }}" class="mobile-nav-link">
+                            <i class="fas fa-tractor"></i>
+                            Farm Profile
+                        </a>
+                    </li>
+                    <li class="mobile-nav-item">
+                        <a href="{{ url_for('cooperatives') }}" class="mobile-nav-link">
+                            <i class="fas fa-users"></i>
+                            Cooperatives
+                        </a>
+                    </li>
+                    <li class="mobile-nav-item">
+                        <a href="{{ url_for('logout') }}" class="mobile-nav-link logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+        <div class="profile-header" style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="color: #2d5a27; font-size: 2.5rem; margin-bottom: 0.5rem;">
+                <i class="fas fa-user-circle" style="color: #32cd32; margin-right: 1rem;"></i>
+                My Profile
+            </h1>
+            <p style="color: #666; font-size: 1.1rem;">Manage your TurmericTech account settings</p>
+        </div>
+
+        {% if user %}
+        <div class="profile-content">
+            <div class="profile-card">
+                <div class="profile-section">
+                    <h3><i class="fas fa-user"></i> Account Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Username:</label>
+                            <span>{{ user.username }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Email:</label>
+                            <span>{{ user.email or 'Not provided' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Account Created:</label>
+                            <span>{{ user.created_at.split(' ')[0] if user.created_at else 'Unknown' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Last Login:</label>
+                            <span>{{ user.last_login.split(' ')[0] if user.last_login else 'Never' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Account Status:</label>
+                            <span class="status-badge {{ 'active' if user.is_verified else 'pending' }}">
+                                {{ 'Verified' if user.is_verified else 'Pending Verification' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+                    <div class="security-actions">
+                        <button class="btn-secondary" onclick="changePassword()">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                        <button class="btn-outline-primary" onclick="enable2FA()">
+                            <i class="fas fa-mobile-alt"></i> Enable Two-Factor Auth
+                        </button>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3><i class="fas fa-bell"></i> Notification Preferences</h3>
+                    <div class="notification-settings">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="email_notifications" checked>
+                            <span class="checkmark"></span>
+                            Email notifications for price alerts
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="trade_notifications" checked>
+                            <span class="checkmark"></span>
+                            Notifications for trade activities
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="market_updates">
+                            <span class="checkmark"></span>
+                            Weekly market intelligence reports
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-user-slash"></i>
+            <h3>Profile Not Found</h3>
+            <p>Unable to load your profile information. Please try logging in again.</p>
+            <a href="{{ url_for('login') }}" class="btn-primary">Login</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <style>
+        .profile-content {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 2px solid rgba(45, 90, 39, 0.1);
+            overflow: hidden;
+        }
+
+        .profile-section {
+            padding: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-section:last-child {
+            border-bottom: none;
+        }
+
+        .profile-section h3 {
+            color: #2d5a27;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .profile-section h3 i {
+            color: #32cd32;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-item label {
+            font-weight: 600;
+            color: #2f4f2f;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item span {
+            color: #666;
+            font-size: 1rem;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.active {
+            background: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .status-badge.pending {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+            border: 1px solid #f39c12;
+        }
+
+        .security-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .security-actions button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .notification-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .checkmark {
+            background: #32cd32;
+            border-color: #32cd32;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 3px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #bdc3c7;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #2d5a27;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .security-actions {
+                flex-direction: column;
+            }
+
+            .security-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+
+    <script>
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            mobileNav.classList.toggle('active');
+        }
+
+        function changePassword() {
+            alert('Password change functionality will be implemented soon!');
+        }
+
+        function enable2FA() {
+            alert('Two-factor authentication will be implemented soon!');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const mobileNav = document.getElementById('mobileNav');
+            const mobileToggle = document.querySelector('.mobile-menu-toggle');
+
+            if (!mobileNav.contains(e.target) && !mobileToggle.contains(e.target)) {
+                mobileNav.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

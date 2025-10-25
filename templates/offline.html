@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - AgriTech</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .offline-container {
+            text-align: center;
+            padding: 3rem 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 2rem;
+        }
+
+        .offline-features {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .offline-features h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .offline-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .offline-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .offline-features li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1>AgriTech - Offline Mode</h1>
+            <p>Limited functionality available without internet</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="offline-container">
+            <div class="offline-icon">📱</div>
+            <h2>You're Currently Offline</h2>
+            <p>Don't worry! You can still access some features of the AgriTech platform.</p>
+
+            <div class="offline-features">
+                <h3>Available Offline:</h3>
+                <ul>
+                    <li>View cached market prices (may not be current)</li>
+                    <li>Access your saved farmer profile</li>
+                    <li>View cooperative information</li>
+                    <li>Read market intelligence (cached)</li>
+                    <li>Prepare transactions for later submission</li>
+                </ul>
+            </div>
+
+            <div class="offline-features">
+                <h3>Will Sync When Online:</h3>
+                <ul>
+                    <li>Pending transactions will be submitted automatically</li>
+                    <li>New market data will be downloaded</li>
+                    <li>Profile updates will be synchronized</li>
+                    <li>Cooperative activities will be recorded</li>
+                </ul>
+            </div>
+
+            <button class="retry-btn" onclick="window.location.reload()">Check Connection & Retry</button>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>© 2025 AgriTech Platform - Works offline for rural connectivity</p>
+        </div>
+    </footer>
+
+    <script>
+        // Check online status
+        function updateOnlineStatus() {
+            const status = navigator.onLine ? 'online' : 'offline';
+            console.log('Connection status:', status);
+
+            if (navigator.onLine) {
+                // Try to reload the page when coming back online
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // Initial check
+        updateOnlineStatus();
+    </script>
+</body>
+</html>

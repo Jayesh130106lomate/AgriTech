@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Login - TurmericTech') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="brand-logo">
+                    <i class="fas fa-seedling brand-icon"></i>
+                    <div class="brand-text">
+                        <div class="brand-title">TurmericTech</div>
+                        <div class="brand-subtitle">Fair Turmeric Trading</div>
+                    </div>
+                </div>
+                <h2>{{ _('Welcome Back') }}</h2>
+                <p>{{ _('Sign in to your TurmericTech account') }}</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                <i class="fas {% if category == 'error' %}fa-exclamation-triangle{% elif category == 'success' %}fa-check-circle{% elif category == 'info' %}fa-info-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="auth-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">{{ _('Username or Email') }}</label>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" name="username" required
+                               autocomplete="username" placeholder="{{ _('Enter your username or email') }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">{{ _('Password') }}</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" required
+                               autocomplete="current-password" placeholder="{{ _('Enter your password') }}">
+                        <button type="button" class="password-toggle" id="passwordToggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+            <div class="form-options">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="remember" name="remember">
+                    <span class="checkmark"></span>
+                    {{ _('Remember me') }}
+                </label>
+            </div>                <button type="submit" class="auth-btn" id="loginBtn">
+                    <span class="btn-text">{{ _('Sign In') }}</span>
+                    <div class="btn-loader" style="display: none;">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>{{ _('Don\'t have an account?') }}
+                    <a href="{{ url_for('register') }}" class="auth-link">{{ _('Create Account') }}</a>
+                </p>
+                <a href="{{ url_for('home') }}" class="back-link">
+                    <i class="fas fa-arrow-left"></i> {{ _('Back to Home') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0f8f0 0%, #f5f5dc 100%);
+            padding: 2rem 1rem;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+            border: 2px solid rgba(45, 90, 39, 0.1);
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #1a4d1a 0%, #2d5a27 100%);
+            color: white;
+            padding: 2.5rem 2rem 2rem;
+            text-align: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand-icon {
+            font-size: 2.5rem;
+            color: #32cd32;
+            animation: pulse 2s infinite;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .brand-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .auth-header h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .auth-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .alert-container {
+            padding: 0 2rem;
+            margin-top: -1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background: #efe;
+            color: #363;
+            border: 1px solid #cfc;
+        }
+
+        .alert-info {
+            background: #eff;
+            color: #336;
+            border: 1px solid #ccf;
+        }
+
+        .auth-form {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2f4f2f;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1rem;
+            z-index: 2;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.875rem 3rem 0.875rem 3rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus {
+            border-color: #32cd32;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(50, 205, 50, 0.1);
+            outline: none;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            background: rgba(50, 205, 50, 0.1);
+            color: #32cd32;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkmark {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .checkmark {
+            background: #32cd32;
+            border-color: #32cd32;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .forgot-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #5a67d8;
+            text-decoration: underline;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(45, 90, 39, 0.3);
+        }
+
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-footer {
+            padding: 1.5rem 2rem 2rem;
+            text-align: center;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .auth-footer p {
+            margin: 0 0 1rem 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .auth-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .auth-link:hover {
+            color: #5a67d8;
+            text-decoration: underline;
+        }
+
+        .back-link {
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #2d5a27;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 1rem;
+            }
+
+            .auth-card {
+                margin: 0;
+            }
+
+            .auth-header {
+                padding: 2rem 1.5rem 1.5rem;
+            }
+
+            .auth-form {
+                padding: 1.5rem;
+            }
+
+            .auth-footer {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const btnLoader = loginBtn.querySelector('.btn-loader');
+            const passwordToggle = document.getElementById('passwordToggle');
+            const passwordInput = document.getElementById('password');
+
+            // Password visibility toggle
+            passwordToggle.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.querySelector('i').className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+            });
+
+            // Form submission with loading state
+            loginForm.addEventListener('submit', function(e) {
+                const username = document.getElementById('username').value.trim();
+                const password = passwordInput.value;
+
+                // Client-side validation
+                if (!username || !password) {
+                    e.preventDefault();
+                    showAlert('Please fill in all fields', 'error');
+                    return;
+                }
+
+                // Show loading state
+                loginBtn.disabled = true;
+                btnText.style.opacity = '0';
+                btnLoader.style.display = 'flex';
+
+                // Add timeout for UX (form will still submit)
+                setTimeout(() => {
+                    if (!loginForm.submitted) {
+                        loginBtn.disabled = false;
+                        btnText.style.opacity = '1';
+                        btnLoader.style.display = 'none';
+                    }
+                }, 3000);
+            });
+
+            // Auto-focus on username field
+            document.getElementById('username').focus();
+
+            // Enter key navigation
+            const inputs = loginForm.querySelectorAll('input:not([type="checkbox"])');
+            inputs.forEach((input, index) => {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const nextInput = inputs[index + 1];
+                        if (nextInput) {
+                            nextInput.focus();
+                        } else {
+                            loginForm.dispatchEvent(new Event('submit'));
+                        }
+                    }
+                });
+            });
+        });
+
+        function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert-temp');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Create new alert
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-temp`;
+            alertDiv.innerHTML = `
+                <i class="fas ${type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i>
+                ${message}
+            `;
+
+            const alertContainer = document.querySelector('.alert-container') || document.querySelector('.auth-form');
+            alertContainer.insertBefore(alertDiv, alertContainer.firstChild);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

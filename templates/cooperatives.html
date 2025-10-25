@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Cooperatives - AgriTech') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1>{{ _('Farmer Cooperatives') }}</h1>
+            <p>{{ _('Building stronger communities through collective farming') }}</p>
+            <nav class="main-nav">
+                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+                <ul id="nav-menu">
+                    <li><a href="{{ url_for('home') }}">{{ _('Home') }}</a></li>
+                    <li><a href="#cooperatives">{{ _('Cooperatives') }}</a></li>
+                    {% if session.user %}
+                    <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>{{ _('Join a Cooperative') }}</h2>
+                <p>{{ _('Cooperatives empower farmers with collective bargaining, shared resources, and community support.') }}</p>
+            </div>
+        </section>
+
+        <section class="cooperative-section">
+            <div class="cooperative-grid">
+                <div class="cooperative-card">
+                    <h3>{{ _('Nizamabad Turmeric Collective') }}</h3>
+                    <p>{{ _('250+ members, specializing in organic turmeric farming. Monthly meetings and bulk purchasing.') }}</p>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>{{ _('Access to premium markets') }}</li>
+                        <li>{{ _('Shared farming equipment') }}</li>
+                        <li>{{ _('Quality certification support') }}</li>
+                        <li>{{ _('Training programs') }}</li>
+                    </ul>
+                    <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                </div>
+                <div class="cooperative-card">
+                    <h3>{{ _('Rural Market Alliance') }}</h3>
+                    <p>{{ _('Cross-crop cooperative for better bargaining power and diversified farming.') }}</p>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>{{ _('Multi-crop support') }}</li>
+                        <li>{{ _('Market intelligence sharing') }}</li>
+                        <li>{{ _('Insurance pooling') }}</li>
+                        <li>{{ _('Export assistance') }}</li>
+                    </ul>
+                    <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                </div>
+                <div class="cooperative-card">
+                    <h3>{{ _('Women Farmers Network') }}</h3>
+                    <p>{{ _('Empowering women farmers with specialized support and networking opportunities.') }}</p>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>{{ _('Women-focused programs') }}</li>
+                        <li>{{ _('Childcare during meetings') }}</li>
+                        <li>{{ _('Skill development workshops') }}</li>
+                        <li>{{ _('Microfinance access') }}</li>
+                    </ul>
+                    <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="benefits-section" style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 3rem;">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #2c3e50;">{{ _('Cooperative Benefits') }}</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div style="text-align: center;">
+                    <h3 style="color: #667eea;">{{ _('Higher Prices') }}</h3>
+                    <p>{{ _('Collective bargaining eliminates middlemen and ensures fair prices for your produce.') }}</p>
+                </div>
+                <div style="text-align: center;">
+                    <h3 style="color: #667eea;">{{ _('Shared Resources') }}</h3>
+                    <p>{{ _('Access to farming equipment, storage facilities, and transportation at reduced costs.') }}</p>
+                </div>
+                <div style="text-align: center;">
+                    <h3 style="color: #667eea;">{{ _('Knowledge Sharing') }}</h3>
+                    <p>{{ _('Learn from experienced farmers and access training programs for better farming practices.') }}</p>
+                </div>
+                <div style="text-align: center;">
+                    <h3 style="color: #667eea;">{{ _('Market Access') }}</h3>
+                    <p>{{ _('Direct access to larger markets and export opportunities through cooperative networks.') }}</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>{{ _('© 2025 AgriTech Platform - Building Fair Agriculture') }}</p>
+            <div class="footer-links">
+                <a href="{{ url_for('home') }}">{{ _('Home') }}</a>
+                <a href="#">{{ _('Privacy Policy') }}</a>
+                <a href="#">{{ _('Terms of Service') }}</a>
+                <a href="#">{{ _('Contact Us') }}</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle function
+        function toggleMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-primary') && e.target.textContent.includes('Apply')) {
+                {% if session.user %}
+                alert('Application submitted! Our team will contact you within 24 hours.');
+                {% else %}
+                alert('Please login to apply for cooperative membership.');
+                window.location.href = '{{ url_for("login") }}';
+                {% endif %}
+            }
+        });
+    </script>
+
+    <!-- Chatbot Widget -->
+    <div id="chat-widget" class="chat-widget">
+        <div class="chat-toggle" onclick="toggleChat()">
+            <i class="fas fa-comments"></i>
+        </div>
+        <div class="chat-container" id="chat-container">
+            <div class="chat-header">
+                <h5><i class="fas fa-robot"></i> AgriBot Assistant</h5>
+                <button class="btn-close" onclick="toggleChat()"></button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Hello! I'm your agricultural assistant. I can help you with farming tips, crop information, market prices, and more. How can I assist you today?
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Ask me anything about farming..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const container = document.getElementById('chat-container');
+            container.classList.toggle('active');
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTyping();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                hideTyping();
+
+                if (response.ok) {
+                    await typeMessage(data.response, 'bot');
+                } else {
+                    await typeMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                }
+            } catch (error) {
+                hideTyping();
+                await typeMessage('Sorry, I\'m having trouble connecting. Please check your internet connection.', 'bot');
+            }
+        }
+
+        function addMessage(content, type) {
+            const messages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function typeMessage(content, type) {
+            const messages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content typing';
+            messageDiv.appendChild(messageContent);
+            messages.appendChild(messageDiv);
+
+            // Type each character with a delay
+            let index = 0;
+            const typingSpeed = 30; // milliseconds per character
+
+            return new Promise((resolve) => {
+                function typeNextChar() {
+                    if (index < content.length) {
+                        messageContent.textContent += content[index];
+                        index++;
+                        messages.scrollTop = messages.scrollHeight;
+                        setTimeout(typeNextChar, typingSpeed);
+                    } else {
+                        // Remove typing class when done
+                        messageContent.classList.remove('typing');
+                        resolve();
+                    }
+                }
+                typeNextChar();
+            });
+        }
+
+        function showTyping() {
+            const messages = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message typing';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            messages.appendChild(typingDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+    </script>
+</body>
+</html>

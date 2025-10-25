@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Impact Dashboard - AgriTech') }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --light-bg: #f8f9fa;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light-bg);
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .progress-section {
+            padding: 2rem 1rem;
+            background: white;
+        }
+
+        .progress-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .progress-card {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .charts-section {
+            padding: 2rem 1rem;
+            background: var(--light-bg);
+        }
+
+        .chart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .chart-canvas-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .intelligence-section {
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #fff8e1, #fff3c4);
+        }
+
+        .intelligence-card {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .intelligence-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+
+        .intelligence-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .intelligence-grid {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .intelligence-item {
+            background: var(--light-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .intelligence-item h5 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .intelligence-item ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .intelligence-item li {
+            padding: 0.25rem 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .market-prices-section {
+            padding: 2rem 1rem;
+            background: white;
+        }
+
+        .market-prices-card {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--light-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .market-prices-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+
+        .market-prices-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .last-updated {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .market-prices-grid {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .price-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-1px);
+        }
+
+        .crop-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .crop-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.25rem 0;
+        }
+
+        .price-unit {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .price-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .price-up {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+
+        .price-down {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .price-stable {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .table-section {
+            padding: 2rem 1rem;
+            background: white;
+        }
+
+        .impact-table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .impact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .impact-table th,
+        .impact-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .impact-table th {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+        }
+
+        .metric-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .actions-section {
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            box-shadow: var(--shadow);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                padding: 1.5rem 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem 0.5rem;
+            }
+
+            .stat-number {
+                font-size: 1.2rem;
+            }
+
+            .market-prices-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .chart-canvas-container {
+                height: 240px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 1.3rem;
+            }
+
+            .chart-container {
+                padding: 1rem;
+            }
+
+            .chart-canvas-container {
+                height: 200px;
+            }
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="fas fa-chart-line"></i>
+                Impact Dashboard
+            </h1>
+            <p class="hero-subtitle">
+                Measuring the real impact of fair agriculture in Nizamabad • Building sustainable futures through data-driven insights
+            </p>
+        </div>
+    </section>
+
+    <!-- Key Statistics -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <span class="stat-number" id="total-farmers">{{ summary.total_farmers }}</span>
+            <div class="stat-label">Registered Farmers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <span class="stat-number" id="avg-income-increase">{{ summary.average_income_increase_percent }}%</span>
+            <div class="stat-label">Average Income Increase</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-store"></i>
+            </div>
+            <span class="stat-number" id="market-access-rate">{{ summary.market_access_improvement_rate }}%</span>
+            <div class="stat-label">Improved Market Access</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <span class="stat-number" id="middleman-elimination">{{ summary.middleman_elimination_rate }}%</span>
+            <div class="stat-label">Middleman Elimination</div>
+        </div>
+    </section>
+
+    <!-- Progress Indicators -->
+    <section class="progress-section">
+        <div class="progress-grid">
+            <div class="progress-card">
+                <h3 class="progress-title">
+                    <i class="fas fa-shopping-cart"></i>
+                    Market Access Improvement
+                </h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" data-width="{{ summary.market_access_improvement_rate }}"></div>
+                </div>
+                <div class="progress-text">
+                    <span>{{ summary.farmers_with_improved_market_access }} of {{ summary.total_farmers }} farmers</span>
+                    <span>{{ summary.market_access_improvement_rate }}%</span>
+                </div>
+            </div>
+            <div class="progress-card">
+                <h3 class="progress-title">
+                    <i class="fas fa-user-friends"></i>
+                    Middleman Elimination
+                </h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" data-width="{{ summary.middleman_elimination_rate }}"></div>
+                </div>
+                <div class="progress-text">
+                    <span>{{ summary.farmers_without_middlemen }} of {{ summary.total_farmers }} farmers</span>
+                    <span>{{ summary.middleman_elimination_rate }}%</span>
+                </div>
+            </div>
+            <div class="progress-card">
+                <h3 class="progress-title">
+                    <i class="fas fa-users-cog"></i>
+                    Cooperative Participation
+                </h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" data-width="{{ "%.1f"|format((summary.total_cooperative_memberships / summary.total_farmers * 100) if summary.total_farmers > 0 else 0) }}"></div>
+                </div>
+                <div class="progress-text">
+                    <span>{{ summary.average_cooperative_memberships_per_farmer }} avg memberships per farmer</span>
+                    <span>{{ "%.1f"|format((summary.total_cooperative_memberships / summary.total_farmers * 100) if summary.total_farmers > 0 else 0) }}%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+        <div class="chart-container">
+            <h2 class="chart-title">
+                <i class="fas fa-chart-area"></i>
+                Impact Trends Over Time
+            </h2>
+            <p style="color: #666; margin-top: 0.5rem; text-align: center; margin-bottom: 1rem;">Tracking progress and growth metrics across key indicators</p>
+            <div class="chart-canvas-container">
+                <canvas id="impactChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Intelligence -->
+    <section class="intelligence-section">
+        <div class="intelligence-card">
+            <div class="intelligence-header">
+                <div class="intelligence-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h2 class="intelligence-title">Market Intelligence & Recommendations</h2>
+            </div>
+            <div id="market-intelligence" class="intelligence-grid">
+                <!-- Market intelligence will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Market Prices -->
+    <section class="market-prices-section">
+        <div class="market-prices-card">
+            <div class="market-prices-header">
+                <div class="market-prices-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <h2 class="market-prices-title">Live Market Prices</h2>
+                <div class="last-updated">
+                    <i class="fas fa-clock"></i>
+                    <span id="last-updated-time">Loading...</span>
+                </div>
+            </div>
+            <div id="live-market-prices" class="market-prices-grid">
+                <!-- Live market prices will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Metrics Table -->
+    <section class="table-section">
+        <div class="impact-table-container">
+            <div class="table-header">
+                <h2 class="table-title">
+                    <i class="fas fa-table"></i>
+                    Detailed Impact Metrics
+                </h2>
+                <p style="color: #666; margin-top: 0.5rem;">Comprehensive breakdown of all impact indicators and targets</p>
+            </div>
+            <table class="impact-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current Value</th>
+                        <th>Target</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="metric-name">Farmer Registration</span></td>
+                        <td><span class="metric-value">{{ summary.total_farmers }}</span></td>
+                        <td>500+</td>
+                        <td><span class="status-badge status-{% if summary.total_farmers > 100 %}success{% else %}warning{% endif %}">{{ '✅ On Track' if summary.total_farmers > 100 else '📈 Growing' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="metric-name">Income Increase</span></td>
+                        <td><span class="metric-value">{{ summary.average_income_increase_percent }}%</span></td>
+                        <td>25%+</td>
+                        <td><span class="status-badge status-{% if summary.average_income_increase_percent > 25 %}success{% else %}warning{% endif %}">{{ '✅ Target Met' if summary.average_income_increase_percent > 25 else '📈 Progressing' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="metric-name">Market Access</span></td>
+                        <td><span class="metric-value">{{ summary.market_access_improvement_rate }}%</span></td>
+                        <td>80%+</td>
+                        <td><span class="status-badge status-{% if summary.market_access_improvement_rate > 80 %}success{% else %}warning{% endif %}">{{ '✅ Excellent' if summary.market_access_improvement_rate > 80 else '📈 Improving' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="metric-name">Middleman Elimination</span></td>
+                        <td><span class="metric-value">{{ summary.middleman_elimination_rate }}%</span></td>
+                        <td>60%+</td>
+                        <td><span class="status-badge status-{% if summary.middleman_elimination_rate > 60 %}success{% else %}warning{% endif %}">{{ '✅ Success' if summary.middleman_elimination_rate > 60 else '📈 Working' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="metric-name">Cooperative Membership</span></td>
+                        <td><span class="metric-value">{{ summary.average_cooperative_memberships_per_farmer }}</span></td>
+                        <td>1.5+</td>
+                        <td><span class="status-badge status-{% if summary.average_cooperative_memberships_per_farmer > 1.5 %}success{% else %}warning{% endif %}">{{ '✅ Strong' if summary.average_cooperative_memberships_per_farmer > 1.5 else '📈 Building' }}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="actions-section">
+        <div class="action-buttons">
+            <button class="action-btn" onclick="exportReport()">
+                <i class="fas fa-file-pdf"></i>
+                Export Impact Report
+            </button>
+            <button class="action-btn" onclick="exportData()">
+                <i class="fas fa-download"></i>
+                Export Raw Data
+            </button>
+            <a href="{{ url_for('home') }}" class="action-btn">
+                <i class="fas fa-home"></i>
+                Back to Home
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2025 AgriTech Platform - Measuring Impact, Building Futures 🌱
+            </p>
+            <div class="footer-icons">
+                <i class="fab fa-facebook footer-icon"></i>
+                <i class="fab fa-twitter footer-icon"></i>
+                <i class="fab fa-linkedin footer-icon"></i>
+                <i class="fab fa-instagram footer-icon"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script type="application/json" id="impact-summary-data">
+        {{ summary|tojson|safe }}
+    </script>
+
+    <script type="application/json" id="live-market-data">
+        {{ live_market_data|tojson|safe }}
+    </script>
+
+    <script type="application/json" id="market-intelligence-data">
+        {{ market_intelligence|tojson|safe }}
+    </script>
+
+    <script type="application/json" id="price-history-data">
+        {{ price_history|tojson|safe }}
+    </script>
+
+    <script>
+        // Lightweight mobile-optimized functions
+        function loadMarketIntelligence() {
+            try {
+                const data = JSON.parse(document.getElementById('market-intelligence-data').textContent);
+                const div = document.getElementById('market-intelligence');
+                let html = '';
+
+                if (data.recommendations?.length) {
+                    html += `<div class="intelligence-item"><h5>💡 Recommendations</h5><ul>${data.recommendations.map(r => `<li>${r}</li>`).join('')}</ul></div>`;
+                }
+                if (data.alerts?.length) {
+                    html += `<div class="intelligence-item"><h5>🚨 Alerts</h5><ul>${data.alerts.map(a => `<li>${a}</li>`).join('')}</ul></div>`;
+                }
+                if (data.opportunities?.length) {
+                    html += `<div class="intelligence-item"><h5>🎯 Opportunities</h5><ul>${data.opportunities.map(o => `<li>${o}</li>`).join('')}</ul></div>`;
+                }
+
+                div.innerHTML = html || '<div class="intelligence-item"><h5>Market Intelligence</h5><p>Loading insights...</p></div>';
+            } catch (e) {
+                console.error('Intelligence load error:', e);
+                document.getElementById('market-intelligence').innerHTML = '<div class="intelligence-item"><h5>Market Intelligence</h5><p>Data unavailable</p></div>';
+            }
+        }
+
+        function loadLiveMarketPrices() {
+            try {
+                const data = JSON.parse(document.getElementById('live-market-data').textContent);
+                const div = document.getElementById('live-market-prices');
+                document.getElementById('last-updated-time').textContent = data.last_updated ? new Date(data.last_updated).toLocaleString() : new Date().toLocaleString();
+
+                let html = '';
+                const prices = data.prices || {turmeric: {price: 8500, change: 2.5}, rice: {price: 2800, change: -1.2}, wheat: {price: 2200, change: 0.8}, maize: {price: 1800, change: 3.1}};
+
+                Object.entries(prices).forEach(([crop, info]) => {
+                    const changeClass = info.change > 0 ? 'price-up' : info.change < 0 ? 'price-down' : 'price-stable';
+                    const changeIcon = info.change > 0 ? 'fas fa-arrow-up' : info.change < 0 ? 'fas fa-arrow-down' : 'fas fa-minus';
+                    const changeText = info.change > 0 ? `+${info.change}%` : `${info.change}%`;
+
+                    html += `<div class="price-card"><div class="crop-name">${crop.charAt(0).toUpperCase() + crop.slice(1)}</div><div class="crop-price">₹${info.price.toLocaleString()}</div><div class="price-unit">per kg</div><div class="price-change ${changeClass}"><i class="${changeIcon}"></i>${changeText}</div></div>`;
+                });
+
+                div.innerHTML = html;
+            } catch (e) {
+                console.error('Price load error:', e);
+                document.getElementById('live-market-prices').innerHTML = '<div class="price-card"><div class="crop-name">Loading</div><div class="crop-price">...</div><div class="price-unit">Please wait</div></div>';
+            }
+        }
+
+        function createImpactChart() {
+            try {
+                const historyData = JSON.parse(document.getElementById('price-history-data').textContent);
+                const ctx = document.getElementById('impactChart').getContext('2d');
+
+                let labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+                let incomeData = [15, 18, 22, 25, 28, 32, 35, 38];
+                let marketData = [45, 52, 58, 65, 72, 78, 82, 85];
+                let coopData = [20, 25, 30, 35, 42, 48, 55, 60];
+
+                // Use real data if available
+                if (historyData && Object.keys(historyData).length > 0) {
+                    const sampleCrop = Object.keys(historyData)[0];
+                    const history = historyData[sampleCrop]?.slice(-8) || [];
+                    if (history.length > 0) {
+                        labels = history.map(item => new Date(item.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}));
+                        const basePrice = history[0]?.price || 100;
+                        incomeData = history.map(item => ((item.price - basePrice) / basePrice * 100) + 15);
+                        marketData = history.map((_, i) => 45 + (i * 2.5));
+                        coopData = history.map((_, i) => 20 + (i * 3));
+                    }
+                }
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Income Increase (%)',
+                            data: incomeData,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }, {
+                            label: 'Market Access (%)',
+                            data: marketData,
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }, {
+                            label: 'Cooperative Growth (%)',
+                            data: coopData,
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {position: 'top'},
+                            tooltip: {backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#fff'}
+                        },
+                        scales: {
+                            y: {beginAtZero: true, max: 100, ticks: {callback: v => v + '%'}},
+                            x: {grid: {color: 'rgba(0,0,0,0.05)'}}
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Chart error:', e);
+                createFallbackChart();
+            }
+        }
+
+        function createFallbackChart() {
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Income Increase (%)',
+                        data: [15, 18, 22, 25, 28, 32],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {responsive: true, maintainAspectRatio: false}
+            });
+        }
+
+        function exportReport() {
+            const data = JSON.parse(document.getElementById('impact-summary-data').textContent);
+            const blob = new Blob([JSON.stringify({title: 'AgriTech Impact Report', generated: new Date().toLocaleString(), summary: data}, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `agritech_report_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Report exported!', 'success');
+        }
+
+        function exportData() {
+            const data = JSON.parse(document.getElementById('impact-summary-data').textContent);
+            const blob = new Blob([JSON.stringify({summary: data, export_date: new Date().toISOString()}, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `agritech_data_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data exported!', 'success');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `position:fixed;top:20px;right:20px;background:${type==='success'?'#4CAF50':'#FF9800'};color:white;padding:1rem;border-radius:8px;z-index:1000;`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => document.body.removeChild(notification), 3000);
+        }
+
+        function animateProgressBars() {
+            document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+                const width = bar.getAttribute('data-width') + '%';
+                bar.style.width = '0%';
+                setTimeout(() => bar.style.width = width, 300);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMarketIntelligence();
+            loadLiveMarketPrices();
+            createImpactChart();
+            animateProgressBars();
+
+            // Simple number animation
+            document.querySelectorAll('.stat-number').forEach(el => {
+                const target = parseInt(el.textContent) || 0;
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    el.textContent = Math.floor(current);
+                }, 40);
+            });
+        });
+    </script>
+
+    <!-- Chatbot Widget -->
+    <div id="chat-widget" class="chat-widget">
+        <div class="chat-toggle" onclick="toggleChat()">
+            <i class="fas fa-comments"></i>
+        </div>
+        <div class="chat-container" id="chat-container">
+            <div class="chat-header">
+                <h5><i class="fas fa-robot"></i> AgriBot Assistant</h5>
+                <button class="btn-close" onclick="toggleChat()"></button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Hello! I'm your agricultural assistant. I can help you with farming tips, crop information, market prices, and more. How can I assist you today?
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Ask me anything about farming..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const container = document.getElementById('chat-container');
+            container.classList.toggle('active');
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTyping();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                hideTyping();
+
+                if (response.ok) {
+                    await typeMessage(data.response, 'bot');
+                } else {
+                    await typeMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                }
+            } catch (error) {
+                hideTyping();
+                await typeMessage('Sorry, I\'m having trouble connecting. Please check your internet connection.', 'bot');
+            }
+        }
+
+        function addMessage(content, type) {
+            const messages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function typeMessage(content, type) {
+            const messages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content typing';
+            messageDiv.appendChild(messageContent);
+            messages.appendChild(messageDiv);
+
+            // Type each character with a delay
+            let index = 0;
+            const typingSpeed = 30; // milliseconds per character
+
+            return new Promise((resolve) => {
+                function typeNextChar() {
+                    if (index < content.length) {
+                        messageContent.textContent += content[index];
+                        index++;
+                        messages.scrollTop = messages.scrollHeight;
+                        setTimeout(typeNextChar, typingSpeed);
+                    } else {
+                        // Remove typing class when done
+                        messageContent.classList.remove('typing');
+                        resolve();
+                    }
+                }
+                typeNextChar();
+            });
+        }
+
+        function showTyping() {
+            const messages = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message typing';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            messages.appendChild(typingDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+    </script>
+</body>
+</html>

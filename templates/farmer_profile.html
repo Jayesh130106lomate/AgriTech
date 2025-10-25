@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Farmer Profile - AgriTech') }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-green: #2d5a27;
+            --light-green: #4a7c59;
+            --accent-orange: #f39c12;
+            --success-green: #27ae60;
+            --warning-yellow: #f1c40f;
+            --danger-red: #e74c3c;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg-light: #f8f9fa;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        /* Enhanced Header */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            color: white;
+            padding: 3rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #e67e22 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border: 4px solid white;
+        }
+
+        .profile-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 120px;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: -2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-header-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Impact Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .metric-change {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .metric-change.positive {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+
+        .metric-change.negative {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        /* Farm Overview */
+        .farm-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .overview-card {
+            background: var(--bg-light);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .overview-card:hover {
+            border-color: var(--primary-green);
+            background: white;
+        }
+
+        .overview-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+        }
+
+        .overview-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .overview-label {
+            font-size: 1rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 2rem 0;
+        }
+
+        /* Transactions */
+        .transaction-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #e9ecef;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .transaction-item:hover {
+            border-color: var(--primary-green);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .transaction-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .transaction-icon.sale {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .transaction-icon.purchase {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .transaction-details h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .transaction-meta {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .transaction-amount {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .transaction-amount .value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+
+        .transaction-amount .unit {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Profile Creation Form */
+        .profile-form {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+        }
+
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .form-section h4 {
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(45, 90, 39, 0.1);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(45, 90, 39, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 90, 39, 0.3);
+        }
+
+        /* Voice Assistant */
+        .voice-assistant {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transition: var(--transition);
+            z-index: 1000;
+            border: 3px solid white;
+        }
+
+        .voice-assistant:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .voice-assistant.active {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #e67e22 100%);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .voice-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .voice-modal.show {
+            display: flex;
+        }
+
+        .voice-content {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .voice-wave {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 120px;
+            margin: 2rem 0;
+        }
+
+        .wave-bar {
+            width: 6px;
+            height: 25px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            margin: 0 3px;
+            border-radius: 3px;
+            animation: wave 1.5s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% { height: 25px; }
+            50% { height: 70px; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .profile-stats {
+                gap: 1rem;
+            }
+
+            .stat-item {
+                padding: 0.75rem;
+                min-width: 100px;
+                max-width: none;
+                flex: 1 1 calc(50% - 0.5rem);
+            }
+
+            .profile-name {
+                font-size: 2rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .farm-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .transaction-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+
+            .transaction-amount {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+
+            .voice-assistant {
+                bottom: 1rem;
+                right: 1rem;
+                width: 60px;
+                height: 60px;
+            }
+
+            .voice-assistant i {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .profile-stats {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .stat-item {
+                width: 100%;
+                max-width: none;
+            }
+
+            .card-header h3 {
+                font-size: 1.2rem;
+            }
+
+            .metric-value {
+                font-size: 2.5rem;
+            }
+
+            .overview-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Small Home Button */
+        .home-button-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1050;
+        }
+
+        .home-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: var(--transition);
+            border: 3px solid white;
+        }
+
+        .home-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .home-button i {
+            font-size: 1.2rem;
+        }
+
+        /* Quick Actions Buttons */
+        .btn-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .btn i {
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+
+        /* Chatbot Widget Styles */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1.5rem;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+        }
+
+        .chat-container {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0) translateY(20px);
+            transform-origin: bottom right;
+            opacity: 0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .chat-container.active {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .chat-header h5 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .message-content.typing::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .bot-message {
+            justify-content: flex-start;
+        }
+
+        .bot-message .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .user-message {
+            justify-content: flex-end;
+        }
+
+        .user-message .message-content {
+            background: var(--primary-green);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .typing {
+            opacity: 0.7;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .chat-input {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input input {
+            flex: 1;
+            border: 2px solid #eee;
+            border-radius: 25px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary-green);
+        }
+
+        .chat-input button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            transform: scale(1.1);
+            background: var(--light-green);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .chat-container {
+                width: calc(100vw - 40px);
+                height: 400px;
+                bottom: 90px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Small Home Button -->
+    <div class="home-button-container">
+        <a href="/" class="home-button" title="Go to Home">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
+
+    <!-- Enhanced Header -->
+    <header class="profile-header">
+        <div class="container">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            {% if profile %}
+            <h1 class="profile-name">{{ profile.personal_info.name }}</h1>
+            <p class="profile-subtitle">{{ _('Empowering Farmers Through Technology') }}</p>
+
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <span class="stat-value">{{ profile.farm_details.land_size_acres }}</span>
+                    <div class="stat-label">{{ _('Acres') }}</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ profile.farm_details.crops_grown|length }}</span>
+                    <div class="stat-label">{{ _('Crops') }}</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ profile.economic_data.total_sales_volume|int }}</span>
+                    <div class="stat-label">{{ _('kg Sold') }}</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ profile.cooperative_activity.joined_cooperatives|length }}</span>
+                    <div class="stat-label">{{ _('Cooperatives') }}</div>
+                </div>
+            </div>
+            {% else %}
+            <h1 class="profile-name">{{ _('Create Your Profile') }}</h1>
+            <p class="profile-subtitle">{{ _('Join thousands of farmers using AgriTech for better farming') }}</p>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="main-content container">
+        {% if not profile %}
+        <!-- Enhanced Profile Creation -->
+        <div class="content-card">
+            <div class="card-body profile-form">
+                <div class="text-center mb-4">
+                    <h2 class="text-primary mb-3">{{ _('Welcome to AgriTech!') }}</h2>
+                    <p class="text-muted">{{ _('Create your farmer profile to unlock personalized insights, market access, and community support') }}</p>
+                </div>
+
+                <form id="profileForm" class="row g-4 justify-content-center">
+                    <div class="col-lg-6 col-xl-5">
+                        <div class="form-section">
+                            <h4><i class="fas fa-user me-2"></i>{{ _('Personal Information') }}</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="name">{{ _('Full Name') }} <span class="text-danger">*</span></label>
+                                    <input type="text" id="name" name="name" class="form-control" required placeholder="{{ _('Enter your full name') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">{{ _('Phone Number') }} <span class="text-danger">*</span></label>
+                                    <input type="tel" id="phone" name="phone" class="form-control" required placeholder="{{ _('Your contact number') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="village">{{ _('Village') }} <span class="text-danger">*</span></label>
+                                    <input type="text" id="village" name="village" class="form-control" required placeholder="{{ _('Your village name') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="experience">{{ _('Farming Experience (years)') }} <span class="text-danger">*</span></label>
+                                    <input type="number" id="experience" name="experience" class="form-control" min="0" required placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="literacy">{{ _('Digital Literacy Level') }} <span class="text-danger">*</span></label>
+                                    <select id="literacy" name="literacy" class="form-control" required>
+                                        <option value="">{{ _('Select your level') }}</option>
+                                        <option value="basic">{{ _('Basic (can read/write with help)') }}</option>
+                                        <option value="intermediate">{{ _('Intermediate (can read/write independently)') }}</option>
+                                        <option value="advanced">{{ _('Advanced (comfortable with digital tools)') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-xl-5">
+                        <div class="form-section">
+                            <h4><i class="fas fa-tractor me-2"></i>{{ _('Farm Details') }}</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="land_size">{{ _('Land Size (acres)') }} <span class="text-danger">*</span></label>
+                                    <input type="number" id="land_size" name="land_size" class="form-control" min="0" step="0.1" required placeholder="0.0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="crops">{{ _('Main Crops') }} <span class="text-danger">*</span></label>
+                                    <input type="text" id="crops" name="crops" class="form-control" required placeholder="{{ _('e.g., turmeric, rice, wheat') }}">
+                                    <small class="text-muted">{{ _('Separate multiple crops with commas') }}</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="farming_type">{{ _('Farming Type') }} <span class="text-danger">*</span></label>
+                                    <select id="farming_type" name="farming_type" class="form-control" required>
+                                        <option value="">{{ _('Select farming type') }}</option>
+                                        <option value="traditional">{{ _('Traditional') }}</option>
+                                        <option value="organic">{{ _('Organic') }}</option>
+                                        <option value="mixed">{{ _('Mixed') }}</option>
+                                        <option value="hydroponic">{{ _('Hydroponic') }}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="income_before">{{ _('Annual Income Before (₹)') }} <span class="text-danger">*</span></label>
+                                    <input type="number" id="income_before" name="income_before" class="form-control" min="0" required placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-rocket me-2"></i>{{ _('Create My Profile') }}
+                        </button>
+                        <p class="text-muted mt-3 mb-0">{{ _('Your data is secure and will only be used to provide better farming insights') }}</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <!-- Enhanced Existing Profile Display -->
+
+        <!-- Impact Metrics Dashboard -->
+        <div class="content-card">
+            <div class="card-header">
+                <div class="card-header-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-chart-line text-white"></i>
+                </div>
+                <h3>{{ _('Your Impact Dashboard') }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="metrics-grid" id="impact-metrics">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p class="text-muted mt-2">{{ _('Loading your impact data...') }}</p>
+                    </div>
+                </div>
+
+                <!-- Progress Chart -->
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farm Overview -->
+        <div class="content-card">
+            <div class="card-header">
+                <div class="card-header-icon" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+                    <i class="fas fa-seedling text-white"></i>
+                </div>
+                <h3>{{ _('Farm Overview') }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="farm-overview">
+                    <div class="overview-card">
+                        <div class="overview-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <div class="overview-value">{{ profile.farm_details.land_size_acres }}</div>
+                        <div class="overview-label">{{ _('Acres of Land') }}</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ [profile.farm_details.land_size_acres / 10 * 100, 100]|min }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overview-card">
+                        <div class="overview-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="overview-value">{{ profile.farm_details.crops_grown|length }}</div>
+                        <div class="overview-label">{{ _('Different Crops') }}</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ [profile.farm_details.crops_grown|length / 5 * 100, 100]|min }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overview-card">
+                        <div class="overview-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="overview-value">{{ profile.economic_data.total_sales_volume|int }}</div>
+                        <div class="overview-label">{{ _('kg Sold This Year') }}</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ [profile.economic_data.total_sales_volume / 1000 * 100, 100]|min }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overview-card">
+                        <div class="overview-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="overview-value">{{ profile.cooperative_activity.joined_cooperatives|length }}</div>
+                        <div class="overview-label">{{ _('Cooperatives Joined') }}</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ [profile.cooperative_activity.joined_cooperatives|length / 3 * 100, 100]|min }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="content-card">
+            <div class="card-header">
+                <div class="card-header-icon" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
+                    <i class="fas fa-history text-white"></i>
+                </div>
+                <h3>{{ _('Recent Transactions') }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="transaction-list" id="transaction-history">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p class="text-muted mt-2">{{ _('Loading your transaction history...') }}</p>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-2"></i>{{ _('View All Transactions') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="content-card">
+            <div class="card-header">
+                <div class="card-header-icon" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+                    <i class="fas fa-bolt text-white"></i>
+                </div>
+                <h3>{{ _('Quick Actions') }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 justify-content-center">
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-success w-100 p-3 d-flex flex-column align-items-center justify-content-center" onclick="window.location.href='/market_prices'">
+                            <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                            <span class="btn-text">{{ _('Check Prices') }}</span>
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-info w-100 p-3 d-flex flex-column align-items-center justify-content-center" onclick="window.location.href='/cooperatives'">
+                            <i class="fas fa-users fa-2x mb-2"></i>
+                            <span class="btn-text">{{ _('Find Cooperatives') }}</span>
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-warning w-100 p-3 d-flex flex-column align-items-center justify-content-center" onclick="window.location.href='/impact/dashboard'">
+                            <i class="fas fa-trophy fa-2x mb-2"></i>
+                            <span class="btn-text">{{ _('View Impact') }}</span>
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button class="btn btn-primary w-100 p-3 d-flex flex-column align-items-center justify-content-center" onclick="toggleVoiceAssistant()">
+                            <i class="fas fa-microphone fa-2x mb-2"></i>
+                            <span class="btn-text">{{ _('Voice Assistant') }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Enhanced Voice Assistant -->
+    <div id="voice-assistant" class="voice-assistant" onclick="toggleVoiceAssistant()">
+        <i class="fas fa-microphone"></i>
+    </div>
+
+    <!-- Enhanced Voice Modal -->
+    <div id="voice-modal" class="voice-modal">
+        <div class="voice-content">
+            <div class="mb-4">
+                <i class="fas fa-microphone fa-3x text-primary mb-3"></i>
+                <h3 class="mb-3">{{ _('Voice Assistant') }}</h3>
+                <p id="voice-status" class="lead">{{ _('Tap to speak or ask for help') }}</p>
+            </div>
+
+            <div class="voice-wave" id="voice-wave" style="display: none;">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+
+            <div class="mt-4">
+                <button onclick="toggleVoiceAssistant()" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-times me-2"></i>{{ _('Close') }}
+                </button>
+                <button onclick="startVoiceRecognition()" class="btn btn-primary">
+                    <i class="fas fa-play me-2"></i>{{ _('Start Listening') }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">{{ _('© 2025 AgriTech Platform - Building Fair Agriculture') }}</p>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced functionality for the farmer profile
+        let progressChart = null;
+
+        // Profile form submission with enhanced UX
+        document.getElementById('profileForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="spinner me-2"></div>Creating Profile...';
+            submitBtn.disabled = true;
+
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                village: document.getElementById('village').value.trim(),
+                experience: parseInt(document.getElementById('experience').value) || 0,
+                literacy: document.getElementById('literacy').value,
+                land_size: parseFloat(document.getElementById('land_size').value) || 0,
+                crops: document.getElementById('crops').value.split(',').map(c => c.trim()).filter(c => c),
+                farming_type: document.getElementById('farming_type').value,
+                income_before: parseInt(document.getElementById('income_before').value) || 0
+            };
+
+            // Basic validation
+            if (!formData.name || !formData.phone || !formData.village || !formData.literacy ||
+                !formData.land_size || !formData.crops.length || !formData.farming_type) {
+                showAlert('Please fill in all required fields', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            fetch('/farmer/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Profile created successfully! Welcome to AgriTech.', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    showAlert('Error creating profile. Please try again.', 'error');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('An error occurred. Please try again.', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Load impact metrics with enhanced visualization
+        function loadImpactMetrics() {
+            fetch('/farmer/impact')
+                .then(response => response.json())
+                .then(data => {
+                    const metricsDiv = document.getElementById('impact-metrics');
+                    metricsDiv.innerHTML = `
+                        <div class="metric-card">
+                            <div class="metric-icon"><i class="fas fa-arrow-up"></i></div>
+                            <span class="metric-value">${data.income_increase_percent}%</span>
+                            <div class="metric-label">Income Increase</div>
+                            <div class="metric-change positive">+${data.income_increase_percent}%</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon"><i class="fas fa-store"></i></div>
+                            <span class="metric-value">${data.market_access_score}%</span>
+                            <div class="metric-label">Direct Market Access</div>
+                            <div class="metric-change positive">+${data.market_access_score}%</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon"><i class="fas fa-exchange-alt"></i></div>
+                            <span class="metric-value">${data.total_transactions}</span>
+                            <div class="metric-label">Total Transactions</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon"><i class="fas fa-users"></i></div>
+                            <span class="metric-value">${data.cooperative_memberships}</span>
+                            <div class="metric-label">Cooperatives Joined</div>
+                        </div>
+                    `;
+
+                    // Create progress chart
+                    createProgressChart(data);
+                })
+                .catch(error => {
+                    console.error('Error loading impact metrics:', error);
+                    const metricsDiv = document.getElementById('impact-metrics');
+                    metricsDiv.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Unable to load impact metrics at this time.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // Create progress chart
+        function createProgressChart(data) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+
+            if (progressChart) {
+                progressChart.destroy();
+            }
+
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Income Growth',
+                        data: [100, 120, 150, 180, 220, 250],
+                        borderColor: 'var(--primary-green)',
+                        backgroundColor: 'rgba(45, 90, 39, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '₹' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load transaction history with enhanced UI
+        function loadTransactionHistory() {
+            // Mock data for demonstration - replace with actual API call
+            const mockTransactions = [
+                {
+                    id: 1,
+                    type: 'sale',
+                    crop: 'Turmeric',
+                    quantity: 500,
+                    amount: 25000,
+                    date: '2025-01-15',
+                    buyer: 'Local Market'
+                },
+                {
+                    id: 2,
+                    type: 'sale',
+                    crop: 'Rice',
+                    quantity: 200,
+                    amount: 8000,
+                    date: '2025-01-10',
+                    buyer: 'Cooperative'
+                },
+                {
+                    id: 3,
+                    type: 'purchase',
+                    crop: 'Fertilizer',
+                    quantity: 50,
+                    amount: 2500,
+                    date: '2025-01-05',
+                    buyer: 'Agri Store'
+                }
+            ];
+
+            const historyDiv = document.getElementById('transaction-history');
+
+            if (mockTransactions.length === 0) {
+                historyDiv.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No transactions yet</h5>
+                        <p class="text-muted">Your transaction history will appear here once you start trading.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            historyDiv.innerHTML = mockTransactions.map(transaction => `
+                <div class="transaction-item">
+                    <div class="transaction-icon ${transaction.type}">
+                        <i class="fas ${transaction.type === 'sale' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <h4>${transaction.type === 'sale' ? 'Sold' : 'Purchased'} ${transaction.crop}</h4>
+                        <div class="transaction-meta">
+                            ${transaction.quantity} kg • ${transaction.buyer} • ${new Date(transaction.date).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <div class="transaction-amount">
+                        <div class="value ${transaction.type === 'sale' ? 'text-success' : 'text-danger'}">
+                            ${transaction.type === 'sale' ? '+' : '-'}₹${transaction.amount.toLocaleString()}
+                        </div>
+                        <div class="unit">@ ₹${(transaction.amount / transaction.quantity).toFixed(0)}/kg</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Enhanced voice assistant
+        let voiceActive = false;
+        let recognition = null;
+
+        function toggleVoiceAssistant() {
+            const modal = document.getElementById('voice-modal');
+            const assistant = document.getElementById('voice-assistant');
+            const wave = document.getElementById('voice-wave');
+            const status = document.getElementById('voice-status');
+
+            voiceActive = !voiceActive;
+
+            if (voiceActive) {
+                modal.classList.add('show');
+                assistant.classList.add('active');
+                status.textContent = 'Listening for your command...';
+            } else {
+                modal.classList.remove('show');
+                assistant.classList.remove('active');
+                wave.style.display = 'none';
+                status.textContent = 'Tap to speak or ask for help';
+                stopVoiceRecognition();
+            }
+        }
+
+        function startVoiceRecognition() {
+            const wave = document.getElementById('voice-wave');
+            const status = document.getElementById('voice-status');
+
+            // Check if browser supports speech recognition
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                status.textContent = 'Voice recognition not supported in this browser';
+                return;
+            }
+
+            wave.style.display = 'flex';
+            status.textContent = 'Listening... Speak now';
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                status.textContent = `You said: "${transcript}"`;
+                processVoiceCommand(transcript);
+            };
+
+            recognition.onerror = function(event) {
+                status.textContent = 'Error occurred. Please try again.';
+                wave.style.display = 'none';
+            };
+
+            recognition.onend = function() {
+                wave.style.display = 'none';
+                if (voiceActive) {
+                    status.textContent = 'Processing your request...';
+                }
+            };
+
+            recognition.start();
+        }
+
+        function stopVoiceRecognition() {
+            if (recognition) {
+                recognition.stop();
+                recognition = null;
+            }
+        }
+
+        function processVoiceCommand(command) {
+            const status = document.getElementById('voice-status');
+
+            if (command.includes('price') || command.includes('market')) {
+                status.textContent = 'Opening market prices...';
+                setTimeout(() => {
+                    window.location.href = '/market_prices';
+                }, 1000);
+            } else if (command.includes('cooperative') || command.includes('group')) {
+                status.textContent = 'Finding cooperatives...';
+                setTimeout(() => {
+                    window.location.href = '/cooperatives';
+                }, 1000);
+            } else if (command.includes('impact') || command.includes('progress')) {
+                status.textContent = 'Showing your impact...';
+                setTimeout(() => {
+                    window.location.href = '/impact/dashboard';
+                }, 1000);
+            } else if (command.includes('help')) {
+                status.textContent = 'I can help you check prices, find cooperatives, view your impact, or navigate the platform.';
+                setTimeout(() => {
+                    toggleVoiceAssistant();
+                }, 3000);
+            } else {
+                status.textContent = 'I didn\'t understand that. Try saying "check prices", "find cooperatives", or "show impact".';
+                setTimeout(() => {
+                    toggleVoiceAssistant();
+                }, 3000);
+            }
+        }
+
+        // Enhanced alert function
+        function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert-temp');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Create new alert
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-temp`;
+            alertDiv.innerHTML = `
+                <i class="fas ${type === 'error' ? 'fa-exclamation-triangle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+                ${message}
+            `;
+
+            const alertContainer = document.querySelector('.card-body') || document.querySelector('.profile-form');
+            if (alertContainer) {
+                alertContainer.insertBefore(alertDiv, alertContainer.firstChild);
+            }
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Form validation enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            // Real-time form validation
+            const inputs = document.querySelectorAll('#profileForm input, #profileForm select');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateField(this);
+                });
+
+                input.addEventListener('input', function() {
+                    // Remove error state on input
+                    this.classList.remove('is-invalid');
+                    const errorMsg = this.parentNode.querySelector('.invalid-feedback');
+                    if (errorMsg) {
+                        errorMsg.remove();
+                    }
+                });
+            });
+
+            // Load data for existing profiles
+            {% if profile %}
+            loadImpactMetrics();
+            loadTransactionHistory();
+            {% endif %}
+        });
+
+        function validateField(field) {
+            const value = field.value.trim();
+            let isValid = true;
+            let message = '';
+
+            // Remove existing validation
+            field.classList.remove('is-invalid', 'is-valid');
+            const existingFeedback = field.parentNode.querySelector('.invalid-feedback');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+
+            switch (field.name) {
+                case 'name':
+                    if (!value) {
+                        isValid = false;
+                        message = 'Full name is required';
+                    } else if (value.length < 2) {
+                        isValid = false;
+                        message = 'Name must be at least 2 characters';
+                    }
+                    break;
+                case 'phone':
+                    if (!value) {
+                        isValid = false;
+                        message = 'Phone number is required';
+                    } else if (!/^\+?[\d\s\-\(\)]{10,}$/.test(value.replace(/\s/g, ''))) {
+                        isValid = false;
+                        message = 'Please enter a valid phone number';
+                    }
+                    break;
+                case 'village':
+                    if (!value) {
+                        isValid = false;
+                        message = 'Village name is required';
+                    }
+                    break;
+                case 'experience':
+                    if (!value || parseInt(value) < 0) {
+                        isValid = false;
+                        message = 'Please enter valid experience years';
+                    }
+                    break;
+                case 'land_size':
+                    if (!value || parseFloat(value) <= 0) {
+                        isValid = false;
+                        message = 'Please enter valid land size';
+                    }
+                    break;
+                case 'crops':
+                    if (!value.trim()) {
+                        isValid = false;
+                        message = 'Please enter at least one crop';
+                    }
+                    break;
+                case 'income_before':
+                    if (!value || parseInt(value) < 0) {
+                        isValid = false;
+                        message = 'Please enter valid income amount';
+                    }
+                    break;
+            }
+
+            if (!isValid) {
+                field.classList.add('is-invalid');
+                const feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                feedback.textContent = message;
+                field.parentNode.appendChild(feedback);
+            } else if (value) {
+                field.classList.add('is-valid');
+            }
+
+            return isValid;
+        }
+    </script>
+
+    <!-- Chatbot Widget -->
+    <div id="chat-widget" class="chat-widget">
+        <div class="chat-toggle" onclick="toggleChat()">
+            <i class="fas fa-comments"></i>
+        </div>
+        <div class="chat-container" id="chat-container">
+            <div class="chat-header">
+                <h5><i class="fas fa-robot"></i> AgriBot Assistant</h5>
+                <button class="btn-close" onclick="toggleChat()"></button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Hello! I'm your agricultural assistant. I can help you with farming tips, crop information, market prices, and more. How can I assist you today?
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Ask me anything about farming..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const container = document.getElementById('chat-container');
+            container.classList.toggle('active');
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTyping();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                hideTyping();
+
+                if (response.ok) {
+                    await typeMessage(data.response, 'bot');
+                } else {
+                    await typeMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                }
+            } catch (error) {
+                hideTyping();
+                await typeMessage('Sorry, I\'m having trouble connecting. Please check your internet connection.', 'bot');
+            }
+        }
+
+        function addMessage(content, type) {
+            const messages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function typeMessage(content, type) {
+            const messages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content typing';
+            messageDiv.appendChild(messageContent);
+            messages.appendChild(messageDiv);
+
+            // Type each character with a delay
+            let index = 0;
+            const typingSpeed = 30; // milliseconds per character
+
+            return new Promise((resolve) => {
+                function typeNextChar() {
+                    if (index < content.length) {
+                        messageContent.textContent += content[index];
+                        index++;
+                        messages.scrollTop = messages.scrollHeight;
+                        setTimeout(typeNextChar, typingSpeed);
+                    } else {
+                        // Remove typing class when done
+                        messageContent.classList.remove('typing');
+                        resolve();
+                    }
+                }
+                typeNextChar();
+            });
+        }
+
+        function showTyping() {
+            const messages = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message typing';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            messages.appendChild(typingDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

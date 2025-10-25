@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement Dashboard - AgriTech</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .supply-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .supply-card h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+
+        .supply-card .quantity {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .quality-grades {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .quality-grade {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .order-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .orders-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .insights-card {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+        }
+
+        .logistics-options {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .logistics-option {
+            background: rgba(255,255,255,0.9);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header bg-gradient">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <h1 class="navbar-brand mb-0 h1">Procurement Dashboard</h1>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#supply">Available Supply</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#orders">My Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#insights">Market Insights</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('procurement.logout') }}">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container text-center py-3">
+            <p class="lead text-white-50">Access bulk supply and manage orders</p>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <!-- Available Supply -->
+        <section id="supply" class="bg-white p-4 rounded shadow mb-5">
+            <h2 class="text-primary mb-4"><i class="fas fa-warehouse me-2"></i>Available Farmer Supply</h2>
+            <div id="supply-data" class="row g-4">
+                <!-- Supply data will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Place Order -->
+        <section class="bg-white p-4 rounded shadow mb-5">
+            <h2 class="text-primary mb-4"><i class="fas fa-shopping-cart me-2"></i>Place New Order</h2>
+            <form id="orderForm" class="row g-3">
+                <div class="col-md-6">
+                    <label for="crop" class="form-label">Crop Type</label>
+                    <select id="crop" class="form-select" required>
+                        <option value="">Select crop</option>
+                        <option value="turmeric">Turmeric</option>
+                        <option value="rice">Rice</option>
+                        <option value="wheat">Wheat</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="quantity" class="form-label">Quantity (kg)</label>
+                    <input type="number" id="quantity" class="form-control" min="100" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="quality_grade" class="form-label">Quality Grade</label>
+                    <select id="quality_grade" class="form-select" required>
+                        <option value="premium">Premium</option>
+                        <option value="standard">Standard</option>
+                        <option value="basic">Basic</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="max_price" class="form-label">Max Price (₹/kg)</label>
+                    <input type="number" id="max_price" class="form-control" min="1" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="delivery_location" class="form-label">Delivery Location</label>
+                    <input type="text" id="delivery_location" class="form-control" placeholder="City, State" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="delivery_date" class="form-label">Preferred Delivery Date</label>
+                    <input type="date" id="delivery_date" class="form-control" required>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg" onclick="placeOrder()">Place Order</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- My Orders -->
+        <section id="orders" class="bg-white p-4 rounded shadow mb-5">
+            <h2 class="text-primary mb-4"><i class="fas fa-list me-2"></i>My Orders</h2>
+            <div id="orders-data" class="table-responsive">
+                <!-- Orders will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Market Insights -->
+        <section id="insights" class="bg-white p-4 rounded shadow mb-5">
+            <h2 class="text-primary mb-4"><i class="fas fa-chart-line me-2"></i>Market Insights & Logistics</h2>
+            <div id="insights-data" class="row g-4">
+                <!-- Insights will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>© 2025 AgriTech Platform - Connecting Procurement Partners to Farmers</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('show');
+        }
+
+        // Load available supply
+        function loadSupplyData() {
+            fetch('/procurement/api/available_supply')
+                .then(response => response.json())
+                .then(data => {
+                    const supplyDiv = document.getElementById('supply-data');
+                    let html = '';
+
+                    for (const [crop, info] of Object.entries(data)) {
+                        html += `
+                            <div class="col-lg-6">
+                                <div class="card h-100">
+                                    <div class="card-body bg-primary text-white">
+                                        <h4 class="card-title">${crop.charAt(0).toUpperCase() + crop.slice(1)}</h4>
+                                        <div class="h3 mb-2">${info.total_available} kg available</div>
+                                        <p class="mb-3">${info.farmers_available} farmers • Avg ₹${info.avg_price}/kg</p>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-2">
+                        `;
+
+                        for (const [grade, gradeInfo] of Object.entries(info.quality_grades)) {
+                            html += `
+                                <div class="col-md-4">
+                                    <div class="p-2 bg-light rounded text-center">
+                                        <h6>${grade.charAt(0).toUpperCase() + grade.slice(1)}</h6>
+                                        <p class="mb-0">${gradeInfo.quantity}kg @ ₹${gradeInfo.price}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        html += '</div></div></div></div>';
+                    }
+
+                    supplyDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading supply data:', error);
+                });
+        }
+
+        // Load orders
+        function loadOrders() {
+            fetch('/procurement/api/my_orders')
+                .then(response => response.json())
+                .then(data => {
+                    const ordersDiv = document.getElementById('orders-data');
+
+                    if (data.orders && data.orders.length > 0) {
+                        let html = '<table class="table table-striped table-hover"><thead class="table-dark">';
+                        html += '<tr><th>Order ID</th><th>Crop</th><th>Quantity</th><th>Status</th><th>Date</th></tr>';
+                        html += '</thead><tbody>';
+
+                        data.orders.forEach(order => {
+                            const statusClass = `badge bg-${order.status === 'pending' ? 'warning' : order.status === 'confirmed' ? 'info' : order.status === 'delivered' ? 'success' : 'secondary'}`;
+                            html += `
+                                <tr>
+                                    <td>${order.order_id}</td>
+                                    <td>${order.crop}</td>
+                                    <td>${order.quantity}kg</td>
+                                    <td><span class="${statusClass}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span></td>
+                                    <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                                </tr>
+                            `;
+                        });
+
+                        html += '</tbody></table>';
+                        ordersDiv.innerHTML = html;
+                    } else {
+                        ordersDiv.innerHTML = '<div class="alert alert-info">No orders placed yet. Place your first order above!</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading orders:', error);
+                });
+        }
+
+        // Load market insights
+        function loadInsights() {
+            fetch('/procurement/api/market_insights')
+                .then(response => response.json())
+                .then(data => {
+                    const insightsDiv = document.getElementById('insights-data');
+                    let html = '';
+
+                    // Demand trends
+                    html += '<div class="col-md-6"><div class="card h-100"><div class="card-body bg-info text-white">';
+                    html += '<h5 class="card-title"><i class="fas fa-chart-line me-2"></i>Demand Trends</h5>';
+                    for (const [crop, trend] of Object.entries(data.demand_trends)) {
+                        html += `<p class="mb-1"><strong>${crop.charAt(0).toUpperCase() + crop.slice(1)}:</strong> ${trend}</p>`;
+                    }
+                    html += '</div></div></div>';
+
+                    // Price predictions
+                    html += '<div class="col-md-6"><div class="card h-100"><div class="card-body bg-warning text-dark">';
+                    html += '<h5 class="card-title"><i class="fas fa-coins me-2"></i>Price Predictions</h5>';
+                    for (const [crop, predictions] of Object.entries(data.price_predictions)) {
+                        html += `<p class="mb-1"><strong>${crop.charAt(0).toUpperCase() + crop.slice(1)}:</strong></p>`;
+                        html += `<small>Next week: ${predictions.next_week} | Next month: ${predictions.next_month}</small><br>`;
+                    }
+                    html += '</div></div></div>';
+
+                    // Supply alerts
+                    html += '<div class="col-md-6"><div class="card h-100"><div class="card-body bg-danger text-white">';
+                    html += '<h5 class="card-title"><i class="fas fa-exclamation-triangle me-2"></i>Supply Alerts</h5><ul class="mb-0">';
+                    data.supply_alerts.forEach(alert => {
+                        html += `<li>${alert}</li>`;
+                    });
+                    html += '</ul></div></div></div>';
+
+                    // Logistics options
+                    html += '<div class="col-md-6"><div class="card h-100"><div class="card-body bg-success text-white">';
+                    html += '<h5 class="card-title"><i class="fas fa-truck me-2"></i>Logistics Options</h5>';
+                    html += '<div class="d-grid gap-2">';
+                    data.logistics_options.forEach(option => {
+                        html += `
+                            <div class="d-flex justify-content-between align-items-center p-2 bg-white bg-opacity-25 rounded">
+                                <div>
+                                    <strong>${option.provider}</strong><br>
+                                    <small>₹${option.cost_per_kg}/kg • ${option.delivery_time}</small>
+                                </div>
+                                <button class="btn btn-light btn-sm">Select</button>
+                            </div>
+                        `;
+                    });
+                    html += '</div></div></div>';
+
+                    insightsDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading insights:', error);
+                });
+        }
+
+        // Place order
+        function placeOrder() {
+            const orderData = {
+                crop: document.getElementById('crop').value,
+                quantity: parseInt(document.getElementById('quantity').value),
+                quality_grade: document.getElementById('quality_grade').value,
+                max_price: parseFloat(document.getElementById('max_price').value),
+                delivery_location: document.getElementById('delivery_location').value,
+                delivery_date: document.getElementById('delivery_date').value
+            };
+
+            // Validate required fields
+            if (!orderData.crop || !orderData.quantity || !orderData.max_price ||
+                !orderData.delivery_location || !orderData.delivery_date) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            fetch('/procurement/api/place_order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Order placed successfully! Order ID: ${data.order_id}`);
+                    // Reset form
+                    document.getElementById('crop').value = '';
+                    document.getElementById('quantity').value = '';
+                    document.getElementById('quality_grade').value = 'premium';
+                    document.getElementById('max_price').value = '';
+                    document.getElementById('delivery_location').value = '';
+                    document.getElementById('delivery_date').value = '';
+                    // Reload orders
+                    loadOrders();
+                } else {
+                    alert('Error placing order: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error placing order:', error);
+                alert('An error occurred while placing the order');
+            });
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSupplyData();
+            loadOrders();
+            loadInsights();
+        });
+    </script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

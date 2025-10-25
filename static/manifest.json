@@ -1,0 +1,117 @@
+{
+    "name": "AgriTech - Fair Trade Platform",
+    "short_name": "AgriTech",
+    "description": "Empowering turmeric farmers in Nizamabad with fair trading and blockchain technology",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#667eea",
+    "orientation": "portrait-primary",
+    "categories": ["business", "finance", "productivity"],
+    "lang": "en",
+    "dir": "ltr",
+    "icons": [
+        {
+            "src": "/static/icons/icon-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-128x128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-152x152.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Market Prices",
+            "short_name": "Prices",
+            "description": "Check live market prices",
+            "url": "/#market",
+            "icons": [
+                {
+                    "src": "/static/icons/shortcut-prices.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Trade",
+            "short_name": "Trade",
+            "description": "Initiate fair trade",
+            "url": "/#trade",
+            "icons": [
+                {
+                    "src": "/static/icons/shortcut-trade.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Cooperatives",
+            "short_name": "Cooperatives",
+            "description": "Join farmer cooperatives",
+            "url": "/cooperatives",
+            "icons": [
+                {
+                    "src": "/static/icons/shortcut-coop.png",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ],
+    "related_applications": [],
+    "prefer_related_applications": false,
+    "screenshots": [
+        {
+            "src": "/static/screenshots/dashboard.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "label": "AgriTech Dashboard"
+        },
+        {
+            "src": "/static/screenshots/market-prices.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "label": "Live Market Prices"
+        }
+    ]
+}
