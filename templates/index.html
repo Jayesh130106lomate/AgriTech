@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriTech - Turmeric Farmers Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>{{ _('AgriTech & Rural Markets') }}</h1>
+        <p>{{ _('Empowering Turmeric Farmers in Nizamabad') }}</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#home">{{ _('Home') }}</a></li>
+            <li><a href="#market">{{ _('Market Prices') }}</a></li>
+            <li><a href="#cooperative">{{ _('Cooperative') }}</a></li>
+            <li><a href="#blockchain">{{ _('Fair Trade') }}</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="home">
+            <h2>{{ _('Welcome') }}</h2>
+            <p>{{ _('Turmeric farmers face unfair pricing and middlemen exploitation. Our platform provides real-time market information, fair trading tools, and cooperative management.') }}</p>
+        </section>
+
+        <section id="market">
+            <h2>{{ _('Live Market Prices') }}</h2>
+            <div id="prices">
+                <!-- Prices will be loaded here -->
+            </div>
+            <button id="refresh-prices">{{ _('Refresh Prices') }}</button>
+        </section>
+
+        <section id="cooperative">
+            <h2>{{ _('Farmer Cooperative') }}</h2>
+            <p>{{ _('Join cooperatives for better bargaining power and shared resources.') }}</p>
+            <!-- Add forms or links for cooperative management -->
+        </section>
+
+        <section id="blockchain">
+            <h2>{{ _('Blockchain-Based Fair Trade') }}</h2>
+            <p>{{ _('Transparent and secure transactions using blockchain technology.') }}</p>
+            <!-- Placeholder for blockchain integration -->
+        </section>
+    </main>
+
+    <footer>
+        <p>{{ _('© 2023 AgriTech Platform') }}</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
