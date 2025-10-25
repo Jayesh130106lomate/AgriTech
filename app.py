@@ -1,33 +1,57 @@
-from flask import Flask, render_template, request, jsonify
-from flask_babel import Babel, gettext as _
-import logging
+from flask import Flask, render_template, redirect, url_for
 
 app = Flask(__name__)
-babel = Babel(app)
 
-# Configure Babel for multilingual support
-app.config['BABEL_DEFAULT_LOCALE'] = 'en'
-app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'te', 'hi']  # English, Telugu, Hindi
-
-def get_locale():
-    return request.accept_languages.best_match(app.config['BABEL_SUPPORTED_LOCALES'])
-
-babel.localeselector = get_locale
-
+# Home route
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html')  # or 'base.html'
 
-@app.route('/market_prices')
+# Market Prices page
+@app.route('/market-prices')
 def market_prices():
-    # Placeholder for real-time market prices
-    prices = {
-        'turmeric': {'price': 150, 'unit': 'per kg'},
-        'other_crop': {'price': 100, 'unit': 'per kg'}
-    }
-    return jsonify(prices)
+    return render_template('market_prices.html')
+
+# Sell Produce page
+@app.route('/sell-produce')
+def sell_produce():
+    return render_template('sell_produce.html')
+
+# Buy Produce page
+@app.route('/buy-produce')
+def buy_produce():
+    return render_template('buy_produce.html')
+
+# Cooperative page
+@app.route('/cooperative')
+def cooperative():
+    return render_template('cooperative.html')
+
+# About page
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+# Contact page
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+# Login page
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+# Register page
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+# Logout (redirect to home)
+@app.route('/logout')
+def logout():
+    # Here you would normally clear session or token
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
     app.run(debug=True)
