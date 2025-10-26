@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" role="img" aria-label="AgriTech logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="40" rx="8" fill="#071026" />
+  <g transform="translate(10,6)">
+    <circle cx="12" cy="14" r="10" fill="url(#g)" />
+    <path d="M36 6 L52 6 L52 30 L36 30 Z" fill="#e6eef8"/>
+    <text x="66" y="22" font-family="Inter, Arial, sans-serif" font-size="14" fill="#e6eef8">AgriTech</text>
+  </g>
+</svg>

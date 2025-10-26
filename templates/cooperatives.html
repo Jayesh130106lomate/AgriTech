@@ -5,69 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ _('Cooperatives - AgriTech') }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Fonts & icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p6O3e1ZfYh1Kq5uYk6Y+u2Q6eV1q3X9fQYpG1zF6qjvZ0m1H3s9v2Q0G9s5sS6f3x1Y4Zx9KJ7Qm1Y2" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Page-specific styling to enhance cooperatives page */
+        body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+        .hero-gradient { background: linear-gradient(135deg,#0f172a 0%, #09203f 100%); color: #fff; padding: 3.5rem 0; border-radius: 16px; margin-bottom: 2rem; }
+        .hero-gradient h2 { font-size: 2.25rem; margin-bottom: 0.5rem; }
+        .hero-gradient p { color: rgba(255,255,255,0.85); max-width: 66ch; }
+        .cooperative-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 1.5rem; }
+        .cooperative-card { background: linear-gradient(180deg, #0b0b0b 0%, #171717 100%); color: #e6eef8; padding: 1.25rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(2,6,23,0.6); }
+        .cooperative-card h3 { margin-top: 0; color: #fff; }
+        .cooperative-card p { color: #b8c6d9; }
+        .cooperative-features { margin: 1rem 0 1.25rem; padding-left: 1rem; color: #dfeaf8; }
+        .btn-primary { background: linear-gradient(90deg,#2563eb,#7c3aed); border: none; color: #fff; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; }
+        .btn-primary:hover { filter: brightness(1.05); }
+        .benefits-section { background: linear-gradient(180deg,#ffffff 0%, #f6f9ff 100%); padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(2,6,23,0.06); }
+        .benefit { text-align:center; padding: 1rem; }
+        .benefit h3 { color: #0f172a; margin-bottom: 0.5rem; }
+        footer.main-footer { margin-top: 2rem; padding: 1.5rem 0; background: transparent; }
+        .chat-widget { position: fixed; right: 1rem; bottom: 1rem; z-index: 1200; }
+        @media (max-width: 600px){ .hero-gradient h2{ font-size: 1.6rem } }
+
+        /* Mobile responsiveness for cooperatives page */
+        @media (max-width: 768px) {
+            header .container { flex-direction: column; align-items: stretch; gap: 0.75rem; padding: 0.75rem; }
+            header nav { display: flex; justify-content: flex-end; gap: 0.5rem; }
+            header .brand img { height: 36px; }
+            .hero-gradient { padding: 1.25rem; }
+            .hero-gradient img { display: none; }
+            .hero-gradient h2 { font-size: 1.5rem; }
+            .cooperative-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .cooperative-card { padding: 1rem; }
+            .cooperative-features { padding-left: 0.75rem; }
+            .btn-primary { width: 100%; padding: 0.75rem; font-size: 1rem; }
+            .nav-link { font-size: 0.95rem; padding: 0.4rem 0.6rem; }
+            .benefits-section { padding: 1rem; }
+            footer.main-footer { padding: 1rem 0; }
+            .chat-container { width: calc(100vw - 32px); right: 16px; bottom: 84px; }
+        }
+
+        @media (max-width: 420px) {
+            header .container { padding: 0.5rem; }
+            .hero-gradient h2 { font-size: 1.25rem; }
+            .hero-gradient p { font-size: 0.95rem; max-width: 40ch; }
+            .cooperative-card h3 { font-size: 1.05rem; }
+            .cooperative-features li { font-size: 0.95rem; }
+            .chat-container { width: calc(100vw - 32px); height: 360px; bottom: 78px; }
+        }
+    </style>
 </head>
 <body>
+    <!-- Header: keep consistent with home layout -->
     <header class="main-header">
-        <div class="container">
-            <h1>{{ _('Farmer Cooperatives') }}</h1>
-            <p>{{ _('Building stronger communities through collective farming') }}</p>
-            <nav class="main-nav">
-                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-                <ul id="nav-menu">
-                    <li><a href="{{ url_for('home') }}">{{ _('Home') }}</a></li>
-                    <li><a href="#cooperatives">{{ _('Cooperatives') }}</a></li>
-                    {% if session.user %}
-                    <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
-                    {% else %}
-                    <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
-                    {% endif %}
-                </ul>
+        <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:1rem 0;">
+            <div style="display:flex;align-items:center;gap:1rem;">
+                <a href="{{ url_for('home') }}" class="brand"> <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="AgriTech" style="height:42px;object-fit:contain;"> </a>
+                <div>
+                    <h1 style="margin:0;font-size:1.25rem">{{ _('Farmer Cooperatives') }}</h1>
+                    <small style="color:rgba(255,255,255,0.7);">{{ _('Building stronger communities through collective farming') }}</small>
+                </div>
+            </div>
+            <nav>
+                <a href="{{ url_for('home') }}" class="nav-link">{{ _('Home') }}</a>
+                <a href="#cooperatives" class="nav-link">{{ _('Cooperatives') }}</a>
+                {% if session.user %}
+                <a href="{{ url_for('logout') }}" class="nav-link">{{ _('Logout') }}</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="nav-link btn-primary" style="padding:0.5rem 0.8rem;border-radius:8px;">{{ _('Login') }}</a>
+                {% endif %}
             </nav>
         </div>
     </header>
 
     <main class="container">
         <section class="hero-section">
-            <div class="hero-content">
-                <h2>{{ _('Join a Cooperative') }}</h2>
-                <p>{{ _('Cooperatives empower farmers with collective bargaining, shared resources, and community support.') }}</p>
+            <div class="hero-gradient container">
+                <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:220px;">
+                        <h2>{{ _('Join a Cooperative') }}</h2>
+                        <p>{{ _('Cooperatives empower farmers with collective bargaining, shared resources, and community support.') }}</p>
+                        <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                            <a href="#cooperatives" class="btn-primary">{{ _('Explore Cooperatives') }}</a>
+                            <a href="{{ url_for('register') }}" class="btn-primary" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.12);">{{ _('Create a Cooperative') }}</a>
+                        </div>
+                    </div>
+                    <div style="width:260px;flex-shrink:0;">
+                        <!-- decorative illustration -->
+                        <img src="{{ url_for('static', filename='img/cooperative-illustration.svg') }}" alt="cooperative" style="width:100%;height:auto;display:block;">
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section class="cooperative-section">
+        <section class="cooperative-section container" id="cooperatives">
             <div class="cooperative-grid">
                 <div class="cooperative-card">
                     <h3>{{ _('Nizamabad Turmeric Collective') }}</h3>
                     <p>{{ _('250+ members, specializing in organic turmeric farming. Monthly meetings and bulk purchasing.') }}</p>
-                    <ul style="text-align: left; margin: 1rem 0;">
-                        <li>{{ _('Access to premium markets') }}</li>
-                        <li>{{ _('Shared farming equipment') }}</li>
-                        <li>{{ _('Quality certification support') }}</li>
-                        <li>{{ _('Training programs') }}</li>
+                    <ul class="cooperative-features">
+                        <li>✅ {{ _('Access to premium markets') }}</li>
+                        <li>✅ {{ _('Shared farming equipment') }}</li>
+                        <li>✅ {{ _('Quality certification support') }}</li>
+                        <li>✅ {{ _('Training programs') }}</li>
                     </ul>
-                    <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                        <a href="#" class="nav-link" style="align-self:center;color:#cfe6ff">{{ _('Learn more') }}</a>
+                    </div>
                 </div>
+
                 <div class="cooperative-card">
                     <h3>{{ _('Rural Market Alliance') }}</h3>
                     <p>{{ _('Cross-crop cooperative for better bargaining power and diversified farming.') }}</p>
-                    <ul style="text-align: left; margin: 1rem 0;">
-                        <li>{{ _('Multi-crop support') }}</li>
-                        <li>{{ _('Market intelligence sharing') }}</li>
-                        <li>{{ _('Insurance pooling') }}</li>
-                        <li>{{ _('Export assistance') }}</li>
+                    <ul class="cooperative-features">
+                        <li>✅ {{ _('Multi-crop support') }}</li>
+                        <li>✅ {{ _('Market intelligence sharing') }}</li>
+                        <li>✅ {{ _('Insurance pooling') }}</li>
+                        <li>✅ {{ _('Export assistance') }}</li>
                     </ul>
-                    <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                        <a href="#" class="nav-link" style="align-self:center;color:#cfe6ff">{{ _('Learn more') }}</a>
+                    </div>
                 </div>
+
                 <div class="cooperative-card">
                     <h3>{{ _('Women Farmers Network') }}</h3>
                     <p>{{ _('Empowering women farmers with specialized support and networking opportunities.') }}</p>
-                    <ul style="text-align: left; margin: 1rem 0;">
-                        <li>{{ _('Women-focused programs') }}</li>
-                        <li>{{ _('Childcare during meetings') }}</li>
-                        <li>{{ _('Skill development workshops') }}</li>
-                        <li>{{ _('Microfinance access') }}</li>
+                    <ul class="cooperative-features">
+                        <li>✅ {{ _('Women-focused programs') }}</li>
+                        <li>✅ {{ _('Childcare during meetings') }}</li>
+                        <li>✅ {{ _('Skill development workshops') }}</li>
+                        <li>✅ {{ _('Microfinance access') }}</li>
                     </ul>
-                    <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn-primary">{{ _('Apply to Join') }}</button>
+                        <a href="#" class="nav-link" style="align-self:center;color:#cfe6ff">{{ _('Learn more') }}</a>
+                    </div>
                 </div>
             </div>
         </section>

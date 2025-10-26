@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480" role="img" aria-label="Cooperative illustration">
+  <defs>
+    <linearGradient id="a" x1="0" x2="1"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="none"/>
+  <g transform="translate(60,40) scale(0.8)">
+    <rect x="0" y="120" width="220" height="120" rx="12" fill="#f3f9ff" />
+    <rect x="240" y="60" width="220" height="180" rx="12" fill="#f3f9ff" />
+    <rect x="120" y="0" width="220" height="150" rx="12" fill="#f3f9ff" />
+    <circle cx="60" cy="180" r="18" fill="url(#a)" />
+    <circle cx="320" cy="120" r="18" fill="url(#a)" />
+    <circle cx="220" cy="30" r="18" fill="url(#a)" />
+    <text x="20" y="200" font-family="Inter, Arial" font-size="18" fill="#0f172a">Co-op A</text>
+    <text x="260" y="140" font-family="Inter, Arial" font-size="18" fill="#0f172a">Co-op B</text>
+    <text x="140" y="30" font-family="Inter, Arial" font-size="18" fill="#0f172a">Co-op C</text>
+  </g>
+</svg>
