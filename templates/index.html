@@ -279,36 +279,220 @@
                 <i class="fas fa-handshake farm-icon"></i>
                 {{ _('Initiate Fair Turmeric Trade') }}
             </h2>
-            <form id="trade-form" class="trade-form mx-auto" style="max-width: 600px;">
+
+            <!-- Trade Overview Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="trade-stat-card p-3 text-center">
+                        <i class="fas fa-chart-line fa-2x mb-2 text-success"></i>
+                        <h4 class="mb-1" id="current-market-price">₹275</h4>
+                        <small class="text-muted">Market Price/kg</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="trade-stat-card p-3 text-center">
+                        <i class="fas fa-balance-scale fa-2x mb-2 text-primary"></i>
+                        <h4 class="mb-1" id="fair-price-suggestion">₹265</h4>
+                        <small class="text-muted">Fair Trade Price</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="trade-stat-card p-3 text-center">
+                        <i class="fas fa-users fa-2x mb-2 text-warning"></i>
+                        <h4 class="mb-1" id="active-trades">12</h4>
+                        <small class="text-muted">Active Trades</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="trade-stat-card p-3 text-center">
+                        <i class="fas fa-shield-alt fa-2x mb-2 text-info"></i>
+                        <h4 class="mb-1">99.9%</h4>
+                        <small class="text-muted">Success Rate</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trade Type Selection -->
+            <div class="trade-type-selector mb-4">
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="tradeType" id="direct-trade" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary" for="direct-trade">
+                        <i class="fas fa-handshake"></i> Direct Trade
+                    </label>
+                    <input type="radio" class="btn-check" name="tradeType" id="auction-trade" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="auction-trade">
+                        <i class="fas fa-gavel"></i> Auction
+                    </label>
+                    <input type="radio" class="btn-check" name="tradeType" id="contract-trade" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="contract-trade">
+                        <i class="fas fa-file-contract"></i> Contract
+                    </label>
+                </div>
+            </div>
+
+            <form id="trade-form" class="trade-form">
                 <div class="row g-3">
+                    <!-- Turmeric Variety Selection -->
                     <div class="col-md-6">
-                        <label for="turmeric_type" class="form-label">{{ _('Turmeric Variety') }}</label>
+                        <label for="turmeric_type" class="form-label">
+                            <i class="fas fa-seedling text-success"></i> Turmeric Variety <span class="text-danger">*</span>
+                        </label>
                         <select id="turmeric_type" class="form-select" required>
-                            <option value="alleppey">{{ _('Alleppey Turmeric') }}</option>
-                            <option value="erode">{{ _('Erode Turmeric') }}</option>
-                            <option value="nizamabad">{{ _('Nizamabad Local') }}</option>
-                            <option value="rajapore">{{ _('Rajapore Turmeric') }}</option>
-                            <option value="duggirala">{{ _('Duggirala Turmeric') }}</option>
-                            <option value="other">{{ _('Other Variety') }}</option>
+                            <option value="" disabled selected>Choose variety...</option>
+                            <option value="alleppey" data-quality="premium" data-region="Kerala">Alleppey Turmeric (Premium)</option>
+                            <option value="erode" data-quality="standard" data-region="Tamil Nadu">Erode Turmeric (Standard)</option>
+                            <option value="nizamabad" data-quality="organic" data-region="Telangana">Nizamabad Local (Organic)</option>
+                            <option value="rajapore" data-quality="premium" data-region="Maharashtra">Rajapore Turmeric (Premium)</option>
+                            <option value="duggirala" data-quality="standard" data-region="Andhra Pradesh">Duggirala Turmeric (Standard)</option>
+                            <option value="other" data-quality="standard" data-region="Other">Other Variety</option>
+                        </select>
+                        <div class="form-text" id="variety-info"></div>
+                    </div>
+
+                    <!-- Quality Grade -->
+                    <div class="col-md-6">
+                        <label for="quality_grade" class="form-label">
+                            <i class="fas fa-award text-warning"></i> Quality Grade <span class="text-danger">*</span>
+                        </label>
+                        <select id="quality_grade" class="form-select" required>
+                            <option value="" disabled selected>Select quality...</option>
+                            <option value="premium">Premium Grade (A+)</option>
+                            <option value="standard">Standard Grade (A)</option>
+                            <option value="basic">Basic Grade (B)</option>
+                        </select>
+                        <div class="form-text" id="quality-info"></div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="col-md-6">
+                        <label for="quantity" class="form-label">
+                            <i class="fas fa-weight text-primary"></i> Quantity (kg) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <input type="number" id="quantity" class="form-control" min="1" max="10000" required>
+                            <span class="input-group-text">kg</span>
+                        </div>
+                        <div class="form-text" id="quantity-info"></div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">
+                            <i class="fas fa-rupee-sign text-success"></i> Agreed Price (₹/kg) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" id="price" class="form-control" min="1" step="0.01" required>
+                            <span class="input-group-text">/kg</span>
+                        </div>
+                        <div class="form-text" id="price-info">
+                            <span id="price-suggestion" class="text-primary"></span>
+                        </div>
+                    </div>
+
+                    <!-- Buyer Information -->
+                    <div class="col-md-6">
+                        <label for="buyer_type" class="form-label">
+                            <i class="fas fa-user-tag text-info"></i> Buyer Type <span class="text-danger">*</span>
+                        </label>
+                        <select id="buyer_type" class="form-select" required>
+                            <option value="" disabled selected>Select buyer type...</option>
+                            <option value="cooperative">Farmer Cooperative</option>
+                            <option value="exporter">Export Company</option>
+                            <option value="processor">Processing Unit</option>
+                            <option value="retailer">Retail Buyer</option>
+                            <option value="wholesaler">Wholesale Trader</option>
                         </select>
                     </div>
+
                     <div class="col-md-6">
-                        <label for="quantity" class="form-label">{{ _('Quantity (kg)') }}</label>
-                        <input type="number" id="quantity" class="form-control" min="1" required>
+                        <label for="buyer" class="form-label">
+                            <i class="fas fa-id-card text-info"></i> Buyer ID / Contact <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="buyer" class="form-control" placeholder="Enter buyer identifier or contact" required>
+                        <div class="form-text">Use buyer ID or phone number for verification</div>
                     </div>
+
+                    <!-- Delivery Information -->
                     <div class="col-md-6">
-                        <label for="price" class="form-label">{{ _('Agreed Price (₹/kg)') }}</label>
-                        <input type="number" id="price" class="form-control" min="1" required>
+                        <label for="delivery_date" class="form-label">
+                            <i class="fas fa-calendar text-warning"></i> Delivery Date <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" id="delivery_date" class="form-control" required>
                     </div>
+
                     <div class="col-md-6">
-                        <label for="buyer" class="form-label">{{ _('Buyer ID') }}</label>
-                        <input type="text" id="buyer" class="form-control" placeholder="Enter buyer identifier" required>
+                        <label for="delivery_location" class="form-label">
+                            <i class="fas fa-map-marker-alt text-danger"></i> Delivery Location
+                        </label>
+                        <input type="text" id="delivery_location" class="form-control" placeholder="Farm location or delivery address">
+                    </div>
+
+                    <!-- Trade Terms -->
+                    <div class="col-12">
+                        <label for="trade_terms" class="form-label">
+                            <i class="fas fa-file-contract text-secondary"></i> Trade Terms & Conditions
+                        </label>
+                        <textarea id="trade_terms" class="form-control" rows="3" placeholder="Specify payment terms, quality standards, delivery conditions..."></textarea>
+                        <div class="form-text">Optional: Add specific terms for this trade agreement</div>
                     </div>
                 </div>
+
+                <!-- Trade Summary -->
+                <div id="trade-summary" class="trade-summary mt-4 p-3 bg-light rounded" style="display: none;">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-calculator"></i> Trade Summary
+                    </h5>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <strong>Total Value:</strong> <span id="total-value" class="text-success">₹0</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Market Alignment:</strong> <span id="market-alignment" class="badge bg-success">Fair Price</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Quality Premium:</strong> <span id="quality-premium">₹0</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Estimated Profit:</strong> <span id="estimated-profit" class="text-success">₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg">{{ _('Create Blockchain Transaction') }}</button>
+                    <button type="button" id="preview-trade" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-eye"></i> Preview Trade
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-paper-plane"></i> Create Blockchain Transaction
+                    </button>
                 </div>
             </form>
+
+            <!-- Trade Preview Modal -->
+            <div class="modal fade" id="tradePreviewModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-file-contract"></i> Trade Agreement Preview
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" id="trade-preview-content">
+                            <!-- Preview content will be populated by JavaScript -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Edit</button>
+                            <button type="button" id="confirm-trade" class="btn btn-primary">
+                                <i class="fas fa-check"></i> Confirm & Create Trade
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="transaction-status" class="transaction-status mt-3"></div>
         </section>
 
@@ -322,14 +506,14 @@
                     <div class="cooperative-card p-4 h-100">
                         <h3 class="text-primary mb-3">{{ _('Nizamabad Turmeric Collective') }}</h3>
                         <p class="mb-3">{{ _('250+ members, specializing in premium turmeric varieties and organic farming practices') }}</p>
-                        <button onclick="window.location.href='{{ url_for('cooperatives') }}'" class="btn btn-outline-primary">{{ _('View Details') }}</button>
+                        <button class="btn btn-outline-primary" data-href="{{ url_for('cooperatives') }}" onclick="window.location.href=this.dataset.href">{{ _('View Details') }}</button>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="cooperative-card p-4 h-100">
                         <h3 class="text-primary mb-3">{{ _('Telangana Turmeric Alliance') }}</h3>
                         <p class="mb-3">{{ _('Regional cooperative focused on fair pricing and quality turmeric export') }}</p>
-                        <button onclick="window.location.href='{{ url_for('cooperatives') }}'" class="btn btn-outline-primary">{{ _('View Details') }}</button>
+                        <button class="btn btn-outline-primary" data-href="{{ url_for('cooperatives') }}" onclick="window.location.href=this.dataset.href">{{ _('View Details') }}</button>
                     </div>
                 </div>
             </div>
@@ -358,6 +542,11 @@
                 </div>
                 <button id="mine-block" class="btn btn-primary btn-lg">{{ _('Mine New Block') }}</button>
                 <div id="mining-status" class="mining-status mt-3"></div>
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('verify_qr_page', batch_id='demo') }}" class="btn btn-outline-success">
+                        <i class="fas fa-qrcode"></i> Verify Product QR Code
+                    </a>
+                </div>
             </div>
         </section>
     </main>

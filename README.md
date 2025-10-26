@@ -1,98 +1,179 @@
-# AgriTech & Rural Markets — Turmeric Farmers in Nizamabad
+﻿#  AgriTech Platform
 
-## Problem Statement
-Turmeric farmers in Nizamabad face unfair pricing, middlemen exploitation, and lack of real-time market information. This leads to financial losses and hinders fair trade practices.
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-2.3.3-lightgrey.svg)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Goal
-Build a mobile or web system (possibly blockchain + multilingual UI) for fair trading, live market prices, and cooperative management.
+A blockchain-based platform for fair turmeric trading, empowering Nizamabad farmers with transparent pricing, real-time market intelligence, and supply chain traceability.
 
-## Core Idea
-Empower farmers with price transparency, fair trade tools, and easy-to-use digital access.
+## 🚀 Quick Start
 
-## Features
-- **Real-time Market Prices**: Live price updates for turmeric and other crops
-- **Blockchain-Based Fair Trade**: Secure, transparent transactions using proof-of-work blockchain
-- **Farmer Cooperatives**: Join cooperatives for collective bargaining and shared resources
-- **User Authentication**: Secure login and registration system
-- **Multilingual UI**: Support for English, Telugu, and Hindi
-- **Responsive Design**: Mobile-friendly interface
-- **Interactive Dashboard**: Real-time blockchain statistics and transaction management
+```bash
+# Clone the repository
+git clone https://github.com/Jayesh130106lomate/AgriTech.git
+cd AgriTech
 
-## Technology Stack
-- **Backend**: Python Flask
-- **Blockchain**: Custom proof-of-work implementation
-- **Frontend**: HTML, CSS, JavaScript
-- **Multilingual**: Flask-Babel
-- **Sessions**: Flask-Session
-- **Blockchain Library**: Web3.py (for future Ethereum integration)
+# Install dependencies
+pip install -r requirements.txt
 
-## Setup Instructions
-1. Install Python 3.8+
-2. Clone or download the project
-3. Install dependencies: `pip install -r requirements.txt`
-4. Run the application: `python app.py`
-5. Open http://localhost:5000 in your browser
+# Run the application
+python app.py
+```
 
-## API Endpoints
-- `GET /`: Home page
-- `GET /market_prices`: Get current market prices
-- `POST /transactions/new`: Create new blockchain transaction
-- `GET /mine`: Mine a new block
-- `GET /chain`: Get full blockchain
-- `GET/POST /login`: User login
-- `GET/POST /register`: User registration
-- `GET /cooperatives`: Cooperative information
-- `GET /logout`: User logout
+Visit `http://localhost:5000` to access the platform.
 
-## Project Structure
+##  Key Features
+
+###  **Market Intelligence**
+- Real-time price feeds from multiple sources
+- Historical price trends and analytics
+- Regional market comparisons
+
+###  **Blockchain Trading**
+- Transparent, immutable trade records
+- Fair trade agreements on blockchain
+- Supply chain traceability with QR codes
+
+###  **Farmer Cooperatives**
+- Cooperative membership management
+- Collective bargaining tools
+- Impact tracking and metrics
+
+###  **AI Assistant**
+- AgriBot for farming advice
+- Market insights and recommendations
+- Multilingual support (English, Telugu, Hindi)
+
+##  Requirements
+
+- Python 3.8+
+- Flask 2.3.3
+- SQLite (built-in)
+- Modern web browser
+
+##  Installation
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/Jayesh130106lomate/AgriTech.git
+cd AgriTech
+```
+
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment (Optional)
+Create a `.env` file for API keys:
+```env
+GEMINI_API_KEY=your-gemini-api-key-here
+SECRET_KEY=your-secret-key-here
+```
+
+### 4. Run Application
+```bash
+python app.py
+```
+
+##  Usage
+
+### For Farmers
+1. **Register/Login** - Create your farmer profile
+2. **View Market Prices** - Check real-time turmeric prices
+3. **Create Trade Agreements** - Record fair trades on blockchain
+4. **Generate QR Codes** - Create traceable product batches
+5. **Join Cooperatives** - Access collective bargaining tools
+
+### For Buyers
+1. **Browse Market** - View available turmeric batches
+2. **Verify Products** - Scan QR codes for authenticity
+3. **Direct Trading** - Connect with farmers transparently
+
+##  API Endpoints
+
+### Market Data
+- GET /market_prices - Real-time market prices
+- GET /market_intelligence - AI-powered insights
+- GET /price_history/<crop> - Historical price data
+
+### Blockchain
+- POST /transactions/new - Create blockchain transaction
+- GET /chain - View blockchain
+- GET /mine - Mine pending transactions
+
+### Supply Chain
+- GET /supply_chain/trace/<batch_id> - Trace product batch
+- POST /create_batch_qr - Generate QR code for batch
+- POST /api/verify_qr - Verify QR code authenticity
+
+### AI Assistant
+- POST /chat - Interact with AgriBot
+
+## 🏗 Project Structure
+
 ```
 AgriTech/
-├── app.py                 # Main Flask application with blockchain integration
+├── app.py                 # Main Flask application
 ├── blockchain.py          # Custom blockchain implementation
+├── market_data.py         # Market data aggregation service
+├── farmer_profiles.py     # Farmer profile management
+├── user_manager.py        # User authentication system
+├── traceability.py        # QR code and traceability system
+├── procurement.py         # Procurement management
 ├── requirements.txt       # Python dependencies
-├── static/
-│   ├── css/
-│   │   └── style.css      # Modern, responsive CSS
-│   └── js/
-│       └── script.js      # Interactive JavaScript
-├── templates/
-│   ├── index.html         # Main dashboard
-│   ├── login.html         # User login page
-│   ├── register.html      # User registration page
-│   └── cooperatives.html  # Cooperative management
-└── README.md              # Project documentation
+├── static/                # CSS, JavaScript, images
+├── templates/             # HTML templates
+└── README.md             # This file
 ```
 
-## Blockchain Features
-- **Proof-of-Work**: Secure block mining with adjustable difficulty
-- **Transaction Recording**: All fair trade transactions recorded immutably
-- **Chain Validation**: Automatic verification of blockchain integrity
-- **Mining Rewards**: Incentive system for block miners
-- **Real-time Stats**: Live display of blocks and transactions
+## 🧪 Testing
 
-## Usage
-1. **View Market Prices**: Check live prices on the home page
-2. **Create Transactions**: Use the fair trade form to initiate blockchain transactions
-3. **Mine Blocks**: Click "Mine New Block" to process pending transactions
-4. **Join Cooperatives**: Explore cooperative options and apply for membership
-5. **User Management**: Register/login to access personalized features
+Run the application and test endpoints:
 
-## Future Enhancements
-- Real-time market data integration with external APIs
-- Advanced user profiles and transaction history
-- Cooperative voting and governance systems
-- Mobile app development
-- Integration with Ethereum blockchain
-- Smart contracts for automated fair trade agreements
-- Multi-language expansion
-- Farmer education and training modules
+```bash
+python app.py
+```
 
-## Security Features
-- Session-based authentication
-- CSRF protection
-- Secure password handling
-- Blockchain immutability
-- Transaction validation
+Test market prices endpoint:
+```bash
+curl http://localhost:5000/market_prices
+```
 
-## Contributing
-This platform is designed to empower farmers and promote fair agriculture. Contributions for improving farmer welfare and agricultural transparency are welcome.
+## 🚀 Deployment
+
+### Local Development
+```bash
+export FLASK_ENV=development
+python app.py
+```
+
+### Production (using Gunicorn)
+```bash
+pip install gunicorn
+gunicorn -w 4 -b 0.0.0.0:5000 app:app
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+##  License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+##  Contact
+
+**Jayesh Lomate** - Lead Developer
+- Email: jayesh130106lomate@gmail.com
+- GitHub: [Jayesh130106lomate](https://github.com/Jayesh130106lomate)
+
+---
+
+<div align="center">
+🌾 Empowering farmers with technology for fair trade 🌾
+</div>

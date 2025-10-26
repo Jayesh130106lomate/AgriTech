@@ -9,6 +9,7 @@ import uuid
 from market_data import MarketDataService
 from farmer_profiles import FarmerProfileManager
 from procurement import procurement_bp
+from traceability import TraceabilitySystem
 from user_manager import UserManager
 from werkzeug.security import generate_password_hash
 import re
@@ -40,9 +41,86 @@ babel.localeselector = get_locale
 
 # Instantiate services
 blockchain = Blockchain()
-market_service = MarketDataService()
+# market_service = MarketDataService()  # Initialize lazily to prevent startup API calls
 profile_manager = FarmerProfileManager()
 user_manager = UserManager()
+traceability_system = TraceabilitySystem()
+
+def get_market_service():
+    """Get market service instance (lazy initialization)"""
+    return MarketDataService()
+
+# Initialize test data on startup
+def initialize_test_data():
+    """Initialize test batches on application startup"""
+    test_batches = [
+        {
+            'batch_id': 'batch_001',
+            'product_name': 'Organic Tomatoes',
+            'farmer_id': 'farmer_123',
+            'quantity': 100,
+            'location': 'Farm A, California',
+            'certifications': ['Organic', 'Non-GMO'],
+            'harvest_date': '2024-01-15',
+            'quality_score': 95
+        },
+        {
+            'batch_id': 'batch_002',
+            'product_name': 'Premium Rice',
+            'farmer_id': 'farmer_456',
+            'quantity': 500,
+            'location': 'Farm B, Texas',
+            'certifications': ['Premium Grade', 'Arsenic Free'],
+            'harvest_date': '2024-01-20',
+            'quality_score': 98
+        },
+        {
+            'batch_id': 'batch_003',
+            'product_name': 'Fresh Wheat',
+            'farmer_id': 'farmer_789',
+            'quantity': 200,
+            'location': 'Farm C, Kansas',
+            'certifications': ['Non-GMO', 'Sustainable'],
+            'harvest_date': '2024-01-25',
+            'quality_score': 92
+        }
+    ]
+
+    # Check if test data already exists
+    existing_batches = set()
+    for block in blockchain.chain:
+        for transaction in block['transactions']:
+            batch_id = transaction.get('supply_chain', {}).get('batch_id')
+            if batch_id:
+                existing_batches.add(batch_id)
+
+    # Add missing test batches
+    added = 0
+    for batch in test_batches:
+        if batch['batch_id'] not in existing_batches:
+            blockchain.new_transaction(
+                sender=batch['farmer_id'],
+                recipient='market',
+                amount=1000,
+                crop_type=batch['product_name'].lower().split()[1] if len(batch['product_name'].split()) > 1 else batch['product_name'].lower(),
+                quantity=batch['quantity'],
+                supply_chain_data=batch
+            )
+            added += 1
+
+    # Only mine if we added transactions and there are pending ones
+    if added > 0 and blockchain.current_transactions:
+        try:
+            last_block = blockchain.last_block
+            proof = blockchain.proof_of_work(last_block['proof'])
+            blockchain.new_block(proof, blockchain.hash(last_block))
+            print(f"Initialized {added} test batches on startup")
+        except Exception as e:
+            print(f"Warning: Could not mine block during initialization: {e}")
+            print("Test batches added but not mined. Use /mine endpoint to mine them.")
+
+# Initialize test data
+initialize_test_data()
 
 # Register blueprints
 app.register_blueprint(procurement_bp)
@@ -57,26 +135,26 @@ def home():
 @app.route('/market_prices')
 def market_prices():
     # Get live market prices with real-time data
-    market_data = market_service.get_live_prices()
+    market_data = get_market_service().get_live_prices()
     return jsonify(market_data)
 
 @app.route('/market_intelligence')
 def market_intelligence():
     # Get market intelligence and recommendations
-    intelligence = market_service.get_market_intelligence()
+    intelligence = get_market_service().get_market_intelligence()
     return jsonify(intelligence)
 
 @app.route('/price_history/<crop>')
 def price_history(crop):
     # Get historical price data for a specific crop
     days = request.args.get('days', 30, type=int)
-    history = market_service.get_price_history(crop, days)
+    history = get_market_service().get_price_history(crop, days)
     return jsonify({'crop': crop, 'history': history})
 
 @app.route('/regional_prices/<region>')
 def regional_prices(region):
     # Get region-specific pricing
-    prices = market_service.get_regional_prices(region)
+    prices = get_market_service().get_regional_prices(region)
     return jsonify({'region': region, 'prices': prices})
 
 @app.route('/api/agmarknet')
@@ -84,21 +162,21 @@ def agmarknet_data():
     # Get Agmarknet data
     state = request.args.get('state', 'Telangana')
     commodity = request.args.get('commodity', 'Turmeric')
-    data = market_service.get_agmarknet_data(state, commodity)
+    data = get_market_service().get_agmarknet_data(state, commodity)
     return jsonify(data)
 
 @app.route('/api/commodityonline')
 def commodityonline_data():
     # Get private aggregator data
     commodity = request.args.get('commodity', 'turmeric')
-    data = market_service.get_commodityonline_data(commodity)
+    data = get_market_service().get_commodityonline_data(commodity)
     return jsonify(data)
 
 @app.route('/api/ncdex')
 def ncdex_data():
     # Get NCDEX futures and spot data
     commodity = request.args.get('commodity', 'turmeric')
-    data = market_service.get_ncdex_data(commodity)
+    data = get_market_service().get_ncdex_data(commodity)
     return jsonify(data)
 
 @app.route('/api/datagovin')
@@ -106,7 +184,7 @@ def datagovin_data():
     # Get Data.gov.in data
     state = request.args.get('state', 'Telangana')
     commodity = request.args.get('commodity', 'Turmeric')
-    data = market_service.get_datagovin_data(state, commodity)
+    data = get_market_service().get_datagovin_data(state, commodity)
     return jsonify(data)
 
 @app.route('/api/all_sources')
@@ -116,10 +194,10 @@ def all_sources_data():
     state = request.args.get('state', 'Telangana')
 
     data = {
-        'agmarknet': market_service.get_agmarknet_data(state, commodity),
-        'commodityonline': market_service.get_commodityonline_data(commodity),
-        'ncdex': market_service.get_ncdex_data(commodity),
-        'datagovin': market_service.get_datagovin_data(state, commodity),
+        'agmarknet': get_market_service().get_agmarknet_data(state, commodity),
+        'commodityonline': get_market_service().get_commodityonline_data(commodity),
+        'ncdex': get_market_service().get_ncdex_data(commodity),
+        'datagovin': get_market_service().get_datagovin_data(state, commodity),
         'last_updated': datetime.now().isoformat(),
         'commodity': commodity,
         'state': state
@@ -161,14 +239,14 @@ def impact_dashboard():
     summary = profile_manager.get_impact_summary()
 
     # Get live market data for real-time display
-    live_market_data = market_service.get_live_prices()
-    market_intelligence = market_service.get_market_intelligence()
+    live_market_data = get_market_service().get_live_prices()
+    market_intelligence = get_market_service().get_market_intelligence()
 
     # Get price history for charts
     price_history = {}
     for crop in ['alleppey', 'erode', 'nizamabad']:
         try:
-            price_history[crop] = market_service.get_price_history(crop, days=30)
+            price_history[crop] = get_market_service().get_price_history(crop, days=30)
         except:
             price_history[crop] = []
 
@@ -235,6 +313,131 @@ def trace_by_qr(qr_code):
     return jsonify({
         'qr_code': qr_code,
         'trace': traced_transactions
+    })
+
+@app.route('/generate_qr/<batch_id>')
+def generate_qr_code(batch_id):
+    """Generate QR code for a specific batch"""
+    # Find batch data in blockchain
+    batch_data = None
+    for block in blockchain.chain:
+        for transaction in block['transactions']:
+            if (transaction.get('supply_chain', {}).get('batch_id') == batch_id or
+                batch_id in transaction.get('supply_chain', {}).get('traceability_qr', '')):
+                batch_data = transaction['supply_chain']
+                batch_data.update({
+                    'transaction_hash': blockchain.hash(block),
+                    'block_index': block['index'],
+                    'timestamp': transaction['timestamp']
+                })
+                break
+        if batch_data:
+            break
+
+    if not batch_data:
+        return jsonify({'error': 'Batch not found'}), 404
+
+    # Generate QR code
+    qr_data_url = traceability_system.generate_qr_data_url(batch_data, include_logo=True)
+
+    return jsonify({
+        'qr_code': qr_data_url,
+        'batch_data': batch_data,
+        'verification_url': f'/verify_qr/{batch_id}'
+    })
+
+@app.route('/display_qr/<batch_id>')
+def display_qr_page(batch_id):
+    """Display QR code as an image page"""
+    return render_template('qr_display.html')
+
+@app.route('/verify_qr/<batch_id>')
+def verify_qr_page(batch_id):
+    """Display QR verification page"""
+    return render_template('qr_verify.html', batch_id=batch_id)
+
+@app.route('/api/verify_qr', methods=['POST'])
+def verify_qr_code():
+    """Verify QR code data"""
+    data = request.get_json()
+    encrypted_data = data.get('encrypted_data')
+
+    if not encrypted_data:
+        return jsonify({'error': 'No encrypted data provided'}), 400
+
+    decrypted_data = traceability_system.verify_traceability(encrypted_data)
+
+    if not decrypted_data:
+        return jsonify({'error': 'Invalid or corrupted QR code'}), 400
+
+    # Verify against blockchain
+    batch_id = decrypted_data.get('batch_id')
+    blockchain_verified = False
+
+    for block in blockchain.chain:
+        for transaction in block['transactions']:
+            if transaction.get('supply_chain', {}).get('batch_id') == batch_id:
+                blockchain_verified = True
+                decrypted_data['blockchain_verified'] = True
+                decrypted_data['block_index'] = block['index']
+                decrypted_data['transaction_hash'] = blockchain.hash(block)
+                break
+        if blockchain_verified:
+            break
+
+    return jsonify({
+        'verified': blockchain_verified,
+        'data': decrypted_data
+    })
+
+@app.route('/create_batch_qr', methods=['POST'])
+def create_batch_qr():
+    """Create a new batch with QR code"""
+    if 'user' not in session:
+        return jsonify({'error': 'Authentication required'}), 401
+
+    data = request.get_json()
+
+    # Generate unique batch ID
+    batch_id = f"BATCH_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+
+    # Create batch data
+    batch_data = {
+        'batch_id': batch_id,
+        'farmer_id': session['user'],
+        'crop_type': data.get('crop_type', 'turmeric'),
+        'quantity': data.get('quantity', 0),
+        'quality_grade': data.get('quality_grade', 'standard'),
+        'farm_location': data.get('farm_location', ''),
+        'harvest_date': data.get('harvest_date', ''),
+        'certifications': data.get('certifications', []),
+        'processing_steps': data.get('processing_steps', []),
+        'transport_info': data.get('transport_info', {}),
+        'storage_conditions': data.get('storage_conditions', {}),
+        'timestamp': str(datetime.now()),
+        'traceability_url': f"/supply_chain/trace/{batch_id}"
+    }
+
+    # Generate QR code
+    qr_data_url = traceability_system.generate_qr_data_url(batch_data, include_logo=True)
+
+    # Create blockchain transaction
+    supply_chain_data = batch_data.copy()
+    index = blockchain.new_transaction(
+        sender=f"farmer_{session['user']}",
+        recipient="agritech_system",
+        amount=0,  # No monetary transaction for batch creation
+        crop_type=batch_data['crop_type'],
+        quantity=batch_data['quantity'],
+        supply_chain_data=supply_chain_data
+    )
+
+    return jsonify({
+        'success': True,
+        'batch_id': batch_id,
+        'qr_code': qr_data_url,
+        'batch_data': batch_data,
+        'blockchain_index': index
     })
 
 @app.route('/chat', methods=['POST'])
@@ -327,22 +530,51 @@ def new_transaction():
     # Extract supply chain data if provided
     supply_chain_data = values.get('supply_chain', {})
 
+    # Enhanced trade data processing
+    trade_data = {
+        'batch_id': f"BATCH_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}",
+        'farmer_id': values['sender'],
+        'crop_type': values['crop_type'],
+        'quantity': values['quantity'],
+        'quality_grade': values.get('quality_grade', 'standard'),
+        'agreed_price': values['amount'] / values['quantity'] if values['quantity'] > 0 else 0,
+        'total_value': values['amount'],
+        'buyer_id': values['recipient'],
+        'buyer_type': values.get('buyer_type', 'unknown'),
+        'trade_type': values.get('trade_type', 'direct'),
+        'delivery_date': values.get('delivery_date'),
+        'delivery_location': values.get('delivery_location'),
+        'trade_terms': values.get('trade_terms'),
+        'timestamp': values.get('timestamp', str(datetime.now())),
+        'blockchain_tx_hash': None  # Will be set after mining
+    }
+
+    # Create blockchain transaction with enhanced supply chain data
+    supply_chain_data.update(trade_data)
+
     # Create a new Transaction
     index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'], values['crop_type'], values['quantity'], supply_chain_data)
 
     # Record transaction in farmer profile if sender is a farmer
     if 'farmer_' in values['sender']:
         profile_manager.record_transaction(values['sender'], {
-            'type': 'sale',
+            'type': 'trade_agreement',
             'crop': values['crop_type'],
             'quantity': values['quantity'],
             'price_per_kg': values['amount'] / values['quantity'] if values['quantity'] > 0 else 0,
             'total_amount': values['amount'],
-            'buyer_type': 'direct' if 'buyer_' in values['recipient'] else 'cooperative',
-            'market_price': market_service.get_live_prices()['prices'].get(values['crop_type'], {}).get('price', 0)
+            'buyer_type': values.get('buyer_type', 'direct'),
+            'trade_type': values.get('trade_type', 'direct'),
+            'quality_grade': values.get('quality_grade', 'standard'),
+            'market_price': get_market_service().get_live_prices()['prices'].get(values['crop_type'], {}).get('price', 0)
         })
 
-    response = {'message': f'Transaction will be added to Block {index}'}
+    response = {
+        'message': f'Trade agreement recorded on blockchain at index {index}',
+        'trade_id': trade_data['batch_id'],
+        'blockchain_index': index,
+        'trade_data': trade_data
+    }
     return jsonify(response), 201
 
 @app.route('/chain', methods=['GET'])
@@ -478,6 +710,79 @@ csrf.exempt(procurement_bp)
 
 # Exempt chat route from CSRF protection
 csrf.exempt(chat)
+
+# Exempt QR verification API from CSRF protection
+csrf.exempt(verify_qr_code)
+
+# Exempt transactions API from CSRF protection for testing
+csrf.exempt(new_transaction)
+
+@app.route('/setup_test_data')
+def setup_test_data():
+    """Setup test batches for QR verification testing"""
+    test_batches = [
+        {
+            'batch_id': 'batch_001',
+            'product_name': 'Organic Tomatoes',
+            'farmer_id': 'farmer_123',
+            'quantity': 100,
+            'location': 'Farm A, California',
+            'certifications': ['Organic', 'Non-GMO'],
+            'harvest_date': '2024-01-15',
+            'quality_score': 95
+        },
+        {
+            'batch_id': 'batch_002',
+            'product_name': 'Premium Rice',
+            'farmer_id': 'farmer_456',
+            'quantity': 500,
+            'location': 'Farm B, Texas',
+            'certifications': ['Premium Grade', 'Arsenic Free'],
+            'harvest_date': '2024-01-20',
+            'quality_score': 98
+        },
+        {
+            'batch_id': 'batch_003',
+            'product_name': 'Fresh Wheat',
+            'farmer_id': 'farmer_789',
+            'quantity': 200,
+            'location': 'Farm C, Kansas',
+            'certifications': ['Non-GMO', 'Sustainable'],
+            'harvest_date': '2024-01-25',
+            'quality_score': 92
+        }
+    ]
+
+    added = 0
+    for batch in test_batches:
+        # Add transaction to blockchain
+        index = blockchain.new_transaction(
+            sender=batch['farmer_id'],
+            recipient='market',
+            amount=1000,
+            crop_type=batch['product_name'].lower().split()[1] if len(batch['product_name'].split()) > 1 else batch['product_name'].lower(),
+            quantity=batch['quantity'],
+            supply_chain_data=batch
+        )
+        added += 1
+
+    # Mine all pending transactions into a new block
+    if blockchain.current_transactions:
+        last_block = blockchain.last_block
+        proof = blockchain.proof_of_work(last_block['proof'])
+        blockchain.new_block(proof, blockchain.hash(last_block))
+
+    return jsonify({
+        'status': 'success',
+        'message': f'Setup complete: {added} test batches added to blockchain',
+        'batches': [b['batch_id'] for b in test_batches],
+        'instructions': [
+            'Visit: http://localhost:5000',
+            'Click: Verify Product QR Code button',
+            'Enter batch ID: batch_001, batch_002, or batch_003',
+            'See complete traceability verification!'
+        ]
+    })
 
 if __name__ == '__main__':
     log = logging.getLogger('werkzeug')

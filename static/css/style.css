@@ -109,6 +109,7 @@ body {
     flex: 1;
     display: flex;
     justify-content: center;
+    margin-right: 2rem;
 }
 
 .nav-menu {
@@ -1644,5 +1645,515 @@ body {
         height: 400px;
         bottom: 90px;
         right: 20px;
+    }
+}
+
+/* QR Code Verification Styles */
+.qr-verification-section {
+    padding: 2rem 0;
+}
+
+.verification-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.scanner-section {
+    border: 2px solid var(--border);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.scanner-section:hover {
+    border-color: var(--accent-green);
+    box-shadow: 0 8px 25px var(--shadow);
+}
+
+.qr-reader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    background: var(--light-green);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.qr-reader-container video {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.scanner-controls {
+    margin-top: 1rem;
+}
+
+.manual-entry {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+}
+
+.results-section {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.result-card {
+    border: 2px solid var(--border);
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-green), var(--primary-green));
+}
+
+.detail-item {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+}
+
+.detail-item strong {
+    color: var(--primary-green);
+}
+
+/* Timeline Styles */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent-green);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--primary-green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.timeline-marker.completed {
+    background: var(--success-green);
+}
+
+.timeline-content {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.timeline-content h5 {
+    color: var(--primary-green);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.timeline-content p {
+    color: var(--text-dark);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Alert animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile responsiveness for QR verification */
+@media (max-width: 768px) {
+    .qr-reader-container {
+        min-height: 250px;
+    }
+
+    .qr-reader-container video {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .timeline {
+        padding-left: 1.5rem;
+    }
+
+    .timeline-item {
+        padding-left: 1.5rem;
+    }
+
+    .timeline-marker {
+        left: -1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 0.7rem;
+    }
+
+    .timeline::before {
+        left: 0.75rem;
+    }
+}
+
+/* QR Code Upload Styles */
+.upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.upload-area:hover,
+.upload-area.drag-over {
+    border-color: var(--primary-green);
+    background: rgba(45, 90, 39, 0.05);
+    transform: scale(1.02);
+}
+
+.upload-content {
+    color: var(--text-light);
+}
+
+.upload-content i {
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+}
+
+#upload-btn {
+    transition: all 0.3s ease;
+}
+
+#upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow);
+}
+
+#upload-preview img {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow);
+    max-width: 300px;
+}
+
+#process-upload,
+#cancel-upload {
+    transition: all 0.3s ease;
+}
+
+#process-upload:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(34, 139, 34, 0.3);
+}
+
+#cancel-upload:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+}
+
+/* Enhanced Trade Form Styles */
+.trade-stat-card {
+    background: linear-gradient(135deg, white 0%, var(--cream) 100%);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.trade-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px var(--shadow);
+    border-color: var(--accent-green);
+}
+
+.trade-stat-card i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.trade-stat-card h4 {
+    color: var(--primary-green);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.trade-stat-card small {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.trade-type-selector {
+    background: linear-gradient(135deg, var(--light-green) 0%, white 100%);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--border);
+}
+
+.trade-type-selector .btn-group {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.trade-type-selector .btn-check:checked + .btn {
+    background: var(--primary-green);
+    border-color: var(--primary-green);
+    color: white;
+}
+
+.trade-form {
+    background: linear-gradient(135deg, white 0%, var(--cream) 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 2px solid var(--border);
+}
+
+.trade-summary {
+    background: linear-gradient(135deg, var(--light-green) 0%, white 100%);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.trade-summary h5 {
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.trade-summary .row > div {
+    margin-bottom: 0.75rem;
+}
+
+.trade-summary strong {
+    color: var(--text-dark);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+/* Enhanced form controls */
+.input-group {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.input-group-text {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.form-select {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.form-select:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 0.2rem rgba(50, 205, 50, 0.25);
+    background: white;
+}
+
+/* Validation styles */
+.was-validated .form-control:valid,
+.form-control.is-valid {
+    border-color: var(--success-green);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='m2.3 6.73 4.47-4.47c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L3.01 8.71c-.39.39-1.02.39-1.41 0L.29 6.44c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l1.3 1.3z'/%3e%3c/svg%3e");
+}
+
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+    border-color: var(--danger-red);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+}
+
+.invalid-feedback {
+    color: var(--danger-red);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Modal enhancements */
+.modal-content {
+    border: 2px solid var(--border);
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+    color: white;
+    border-bottom: 2px solid var(--accent-green);
+    border-radius: 13px 13px 0 0;
+}
+
+.modal-body {
+    background: linear-gradient(135deg, white 0%, var(--cream) 100%);
+}
+
+.trade-preview-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.trade-preview-content h6 {
+    color: var(--primary-green);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 2px solid var(--accent-green);
+    padding-bottom: 0.5rem;
+}
+
+.preview-item {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+}
+
+.preview-item strong {
+    color: var(--text-dark);
+}
+
+/* Loading states */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+/* Price suggestion styles */
+#price-suggestion {
+    font-weight: 600;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Mobile responsiveness for trade form */
+@media (max-width: 768px) {
+    .trade-stat-card {
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+
+    .trade-type-selector {
+        padding: 0.75rem;
+    }
+
+    .trade-form {
+        padding: 1.5rem;
+    }
+
+    .trade-summary {
+        margin-top: 1rem;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .input-group-text {
+        border-radius: 0 0 8px 8px !important;
+        border-top: none !important;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .trade-preview-content {
+        max-height: 300px;
     }
 }

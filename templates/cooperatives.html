@@ -9,77 +9,690 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p6O3e1ZfYh1Kq5uYk6Y+u2Q6eV1q3X9fQYpG1zF6qjvZ0m1H3s9v2Q0G9s5sS6f3x1Y4Zx9KJ7Qm1Y2" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* Page-specific styling to enhance cooperatives page */
-        body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
-        .hero-gradient { background: linear-gradient(135deg,#0f172a 0%, #09203f 100%); color: #fff; padding: 3.5rem 0; border-radius: 16px; margin-bottom: 2rem; }
-        .hero-gradient h2 { font-size: 2.25rem; margin-bottom: 0.5rem; }
-        .hero-gradient p { color: rgba(255,255,255,0.85); max-width: 66ch; }
-        .cooperative-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 1.5rem; }
-        .cooperative-card { background: linear-gradient(180deg, #0b0b0b 0%, #171717 100%); color: #e6eef8; padding: 1.25rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(2,6,23,0.6); }
-        .cooperative-card h3 { margin-top: 0; color: #fff; }
-        .cooperative-card p { color: #b8c6d9; }
-        .cooperative-features { margin: 1rem 0 1.25rem; padding-left: 1rem; color: #dfeaf8; }
-        .btn-primary { background: linear-gradient(90deg,#2563eb,#7c3aed); border: none; color: #fff; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; }
-        .btn-primary:hover { filter: brightness(1.05); }
-        .benefits-section { background: linear-gradient(180deg,#ffffff 0%, #f6f9ff 100%); padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(2,6,23,0.06); }
-        .benefit { text-align:center; padding: 1rem; }
-        .benefit h3 { color: #0f172a; margin-bottom: 0.5rem; }
-        footer.main-footer { margin-top: 2rem; padding: 1.5rem 0; background: transparent; }
-        .chat-widget { position: fixed; right: 1rem; bottom: 1rem; z-index: 1200; }
-        @media (max-width: 600px){ .hero-gradient h2{ font-size: 1.6rem } }
-
-        /* Mobile responsiveness for cooperatives page */
-        @media (max-width: 768px) {
-            header .container { flex-direction: column; align-items: stretch; gap: 0.75rem; padding: 0.75rem; }
-            header nav { display: flex; justify-content: flex-end; gap: 0.5rem; }
-            header .brand img { height: 36px; }
-            .hero-gradient { padding: 1.25rem; }
-            .hero-gradient img { display: none; }
-            .hero-gradient h2 { font-size: 1.5rem; }
-            .cooperative-grid { grid-template-columns: 1fr; gap: 1rem; }
-            .cooperative-card { padding: 1rem; }
-            .cooperative-features { padding-left: 0.75rem; }
-            .btn-primary { width: 100%; padding: 0.75rem; font-size: 1rem; }
-            .nav-link { font-size: 0.95rem; padding: 0.4rem 0.6rem; }
-            .benefits-section { padding: 1rem; }
-            footer.main-footer { padding: 1rem 0; }
-            .chat-container { width: calc(100vw - 32px); right: 16px; bottom: 84px; }
+        /* Enhanced Cooperatives Page Styling */
+        :root {
+            --primary-green: #2d5a27;
+            --primary-green-light: #4a7c59;
+            --primary-green-dark: #1a3d1a;
+            --accent-orange: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f8fafc;
+            --card-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            --card-shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        @media (max-width: 420px) {
-            header .container { padding: 0.5rem; }
-            .hero-gradient h2 { font-size: 1.25rem; }
-            .hero-gradient p { font-size: 0.95rem; max-width: 40ch; }
-            .cooperative-card h3 { font-size: 1.05rem; }
-            .cooperative-features li { font-size: 0.95rem; }
-            .chat-container { width: calc(100vw - 32px); height: 360px; bottom: 78px; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Enhanced Header */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-logo i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .brand-text h1 {
+            margin: 0;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .brand-text p {
+            margin: 0;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .btn-login {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: -2rem;
+            position: relative;
+            z-index: 10;
+        }
+        .hero-section {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            padding: 0 2rem;
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-illustration {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .hero-illustration i {
+            font-size: 4rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Cooperatives Grid */
+        .cooperatives-section {
+            padding: 4rem 2rem;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cooperatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .cooperative-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .cooperative-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .cooperative-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+            padding: 2rem;
+            color: white;
+            position: relative;
+        }
+
+        .cooperative-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .cooperative-icon i {
+            font-size: 1.5rem;
+        }
+
+        .cooperative-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .cooperative-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .cooperative-meta i {
+            font-size: 0.8rem;
+        }
+
+        .cooperative-body {
+            padding: 2rem;
+        }
+
+        .cooperative-description {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .cooperative-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem 0;
+        }
+
+        .cooperative-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .cooperative-features li i {
+            color: var(--primary-green);
+            font-size: 0.8rem;
+        }
+
+        .cooperative-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cooperative-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-apply {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-apply:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(45, 90, 39, 0.3);
+        }
+
+        .btn-learn-more {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-learn-more:hover {
+            color: var(--primary-green-dark);
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .benefits-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .benefits-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .benefits-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .benefits-header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .benefit-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .benefit-card:nth-child(2) .benefit-icon {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #f97316 100%);
+        }
+
+        .benefit-card:nth-child(3) .benefit-icon {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+        }
+
+        .benefit-card:nth-child(4) .benefit-icon {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+        }
+
+        .benefit-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .benefit-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .main-footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 3rem 0 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 3rem 2rem 2rem;
+        }
+
+        .footer-section h3 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-section p {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .cooperatives-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cooperative-actions {
+                flex-direction: column;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .cooperative-header {
+                padding: 1.5rem;
+            }
+
+            .cooperative-body {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header: keep consistent with home layout -->
+    <!-- Enhanced Header -->
     <header class="main-header">
-        <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:1rem 0;">
-            <div style="display:flex;align-items:center;gap:1rem;">
-                <a href="{{ url_for('home') }}" class="brand"> <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="AgriTech" style="height:42px;object-fit:contain;"> </a>
-                <div>
-                    <h1 style="margin:0;font-size:1.25rem">{{ _('Farmer Cooperatives') }}</h1>
-                    <small style="color:rgba(255,255,255,0.7);">{{ _('Building stronger communities through collective farming') }}</small>
+        <div class="container">
+            <div class="header-content">
+                <div class="brand-section">
+                    <div class="brand-logo">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>AgriTech</h1>
+                        <p>Cooperatives</p>
+                    </div>
                 </div>
+                <nav class="nav-menu">
+                    <a href="{{ url_for('home') }}" class="nav-link">{{ _('Home') }}</a>
+                    <a href="#cooperatives" class="nav-link">{{ _('Cooperatives') }}</a>
+                    {% if session.user %}
+                    <a href="{{ url_for('logout') }}" class="nav-link">{{ _('Logout') }}</a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-login">{{ _('Login') }}</a>
+                    {% endif %}
+                </nav>
             </div>
-            <nav>
-                <a href="{{ url_for('home') }}" class="nav-link">{{ _('Home') }}</a>
-                <a href="#cooperatives" class="nav-link">{{ _('Cooperatives') }}</a>
-                {% if session.user %}
-                <a href="{{ url_for('logout') }}" class="nav-link">{{ _('Logout') }}</a>
-                {% else %}
-                <a href="{{ url_for('login') }}" class="nav-link btn-primary" style="padding:0.5rem 0.8rem;border-radius:8px;">{{ _('Login') }}</a>
-                {% endif %}
-            </nav>
         </div>
     </header>
 
-    <main class="container">
+    <main class="main-content container">
         <section class="hero-section">
             <div class="hero-gradient container">
                 <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;">
@@ -99,87 +712,397 @@
             </div>
         </section>
 
-        <section class="cooperative-section container" id="cooperatives">
-            <div class="cooperative-grid">
+        <section class="cooperatives-section" id="cooperatives">
+            <div class="section-header">
+                <h2>Available Cooperatives</h2>
+                <p>Join a cooperative that matches your farming needs and location. Each cooperative offers unique benefits and specializes in different agricultural sectors.</p>
+            </div>
+
+            <div class="cooperatives-grid">
+                <!-- Nizamabad Turmeric Collective -->
                 <div class="cooperative-card">
-                    <h3>{{ _('Nizamabad Turmeric Collective') }}</h3>
-                    <p>{{ _('250+ members, specializing in organic turmeric farming. Monthly meetings and bulk purchasing.') }}</p>
-                    <ul class="cooperative-features">
-                        <li>✅ {{ _('Access to premium markets') }}</li>
-                        <li>✅ {{ _('Shared farming equipment') }}</li>
-                        <li>✅ {{ _('Quality certification support') }}</li>
-                        <li>✅ {{ _('Training programs') }}</li>
-                    </ul>
-                    <div style="display:flex;gap:0.5rem;">
-                        <button class="btn-primary">{{ _('Apply to Join') }}</button>
-                        <a href="#" class="nav-link" style="align-self:center;color:#cfe6ff">{{ _('Learn more') }}</a>
+                    <div class="cooperative-header">
+                        <div class="cooperative-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3>Nizamabad Turmeric Collective</h3>
+                        <div class="cooperative-meta">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Nizamabad, Telangana</span>
+                        </div>
+                    </div>
+                    <div class="cooperative-body">
+                        <p class="cooperative-description">Specialized in organic turmeric farming with sustainable cultivation practices. Focus on premium quality export-grade turmeric production.</p>
+                        <div class="cooperative-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">450</span>
+                                <span class="stat-label">Members</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">2,500</span>
+                                <span class="stat-label">Acres</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">₹8.5L</span>
+                                <span class="stat-label">Turnover</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">5★</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                        </div>
+                        <ul class="cooperative-features">
+                            <li><i class="fas fa-check"></i> Organic certified farming</li>
+                            <li><i class="fas fa-check"></i> Export quality produce</li>
+                            <li><i class="fas fa-check"></i> Fair trade partnerships</li>
+                            <li><i class="fas fa-check"></i> Technical training programs</li>
+                        </ul>
+                        <div class="cooperative-actions">
+                            <button class="btn-apply" onclick="applyToCooperative('Nizamabad Turmeric Collective')">
+                                <i class="fas fa-user-plus"></i>
+                                Apply to Join
+                            </button>
+                            <a href="#" class="btn-learn-more">
+                                <i class="fas fa-info-circle"></i>
+                                Learn More
+                            </a>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Rural Market Alliance -->
                 <div class="cooperative-card">
-                    <h3>{{ _('Rural Market Alliance') }}</h3>
-                    <p>{{ _('Cross-crop cooperative for better bargaining power and diversified farming.') }}</p>
-                    <ul class="cooperative-features">
-                        <li>✅ {{ _('Multi-crop support') }}</li>
-                        <li>✅ {{ _('Market intelligence sharing') }}</li>
-                        <li>✅ {{ _('Insurance pooling') }}</li>
-                        <li>✅ {{ _('Export assistance') }}</li>
-                    </ul>
-                    <div style="display:flex;gap:0.5rem;">
-                        <button class="btn-primary">{{ _('Apply to Join') }}</button>
-                        <a href="#" class="nav-link" style="align-self:center;color:#cfe6ff">{{ _('Learn more') }}</a>
+                    <div class="cooperative-header">
+                        <div class="cooperative-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h3>Rural Market Alliance</h3>
+                        <div class="cooperative-meta">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Multiple Districts, Karnataka</span>
+                        </div>
+                    </div>
+                    <div class="cooperative-body">
+                        <p class="cooperative-description">Multi-commodity cooperative providing marketing support, storage facilities, and direct market linkages for small and marginal farmers.</p>
+                        <div class="cooperative-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">1,200</span>
+                                <span class="stat-label">Members</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">15</span>
+                                <span class="stat-label">Centers</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">₹25L</span>
+                                <span class="stat-label">Turnover</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">4.8★</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                        </div>
+                        <ul class="cooperative-features">
+                            <li><i class="fas fa-check"></i> Cold storage facilities</li>
+                            <li><i class="fas fa-check"></i> Market price intelligence</li>
+                            <li><i class="fas fa-check"></i> Bulk transportation</li>
+                            <li><i class="fas fa-check"></i> Insurance coverage</li>
+                        </ul>
+                        <div class="cooperative-actions">
+                            <button class="btn-apply" onclick="applyToCooperative('Rural Market Alliance')">
+                                <i class="fas fa-user-plus"></i>
+                                Apply to Join
+                            </button>
+                            <a href="#" class="btn-learn-more">
+                                <i class="fas fa-info-circle"></i>
+                                Learn More
+                            </a>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Women Farmers Network -->
                 <div class="cooperative-card">
-                    <h3>{{ _('Women Farmers Network') }}</h3>
-                    <p>{{ _('Empowering women farmers with specialized support and networking opportunities.') }}</p>
-                    <ul class="cooperative-features">
-                        <li>✅ {{ _('Women-focused programs') }}</li>
-                        <li>✅ {{ _('Childcare during meetings') }}</li>
-                        <li>✅ {{ _('Skill development workshops') }}</li>
-                        <li>✅ {{ _('Microfinance access') }}</li>
-                    </ul>
-                    <div style="display:flex;gap:0.5rem;">
-                        <button class="btn-primary">{{ _('Apply to Join') }}</button>
-                        <a href="#" class="nav-link" style="align-self:center;color:#cfe6ff">{{ _('Learn more') }}</a>
+                    <div class="cooperative-header">
+                        <div class="cooperative-icon">
+                            <i class="fas fa-female"></i>
+                        </div>
+                        <h3>Women Farmers Network</h3>
+                        <div class="cooperative-meta">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Maharashtra & Gujarat</span>
+                        </div>
+                    </div>
+                    <div class="cooperative-body">
+                        <p class="cooperative-description">Empowering women farmers through skill development, microfinance support, and collective farming initiatives focused on vegetables and dairy.</p>
+                        <div class="cooperative-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">850</span>
+                                <span class="stat-label">Women</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">8</span>
+                                <span class="stat-label">Centers</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">₹12L</span>
+                                <span class="stat-label">Turnover</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">4.9★</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                        </div>
+                        <ul class="cooperative-features">
+                            <li><i class="fas fa-check"></i> Women empowerment focus</li>
+                            <li><i class="fas fa-check"></i> Microfinance access</li>
+                            <li><i class="fas fa-check"></i> Childcare services</li>
+                            <li><i class="fas fa-check"></i> Skill development</li>
+                        </ul>
+                        <div class="cooperative-actions">
+                            <button class="btn-apply" onclick="applyToCooperative('Women Farmers Network')">
+                                <i class="fas fa-user-plus"></i>
+                                Apply to Join
+                            </button>
+                            <a href="#" class="btn-learn-more">
+                                <i class="fas fa-info-circle"></i>
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coastal Fisheries Cooperative -->
+                <div class="cooperative-card">
+                    <div class="cooperative-header">
+                        <div class="cooperative-icon">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <h3>Coastal Fisheries Cooperative</h3>
+                        <div class="cooperative-meta">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Kerala Coast</span>
+                        </div>
+                    </div>
+                    <div class="cooperative-body">
+                        <p class="cooperative-description">Sustainable marine fisheries cooperative with modern fishing techniques, cold chain management, and export-oriented seafood processing.</p>
+                        <div class="cooperative-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">320</span>
+                                <span class="stat-label">Fisherfolk</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">45</span>
+                                <span class="stat-label">Boats</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">₹18L</span>
+                                <span class="stat-label">Turnover</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">4.7★</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                        </div>
+                        <ul class="cooperative-features">
+                            <li><i class="fas fa-check"></i> Sustainable fishing</li>
+                            <li><i class="fas fa-check"></i> Cold chain logistics</li>
+                            <li><i class="fas fa-check"></i> Export processing</li>
+                            <li><i class="fas fa-check"></i> GPS tracking systems</li>
+                        </ul>
+                        <div class="cooperative-actions">
+                            <button class="btn-apply" onclick="applyToCooperative('Coastal Fisheries Cooperative')">
+                                <i class="fas fa-user-plus"></i>
+                                Apply to Join
+                            </button>
+                            <a href="#" class="btn-learn-more">
+                                <i class="fas fa-info-circle"></i>
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Himalayan Organic Growers -->
+                <div class="cooperative-card">
+                    <div class="cooperative-header">
+                        <div class="cooperative-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <h3>Himalayan Organic Growers</h3>
+                        <div class="cooperative-meta">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Himachal Pradesh</span>
+                        </div>
+                    </div>
+                    <div class="cooperative-body">
+                        <p class="cooperative-description">High-altitude organic farming cooperative specializing in apple cultivation, herbal medicines, and premium quality honey production.</p>
+                        <div class="cooperative-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">280</span>
+                                <span class="stat-label">Members</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">1,800</span>
+                                <span class="stat-label">Acres</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">₹6.2L</span>
+                                <span class="stat-label">Turnover</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">4.6★</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                        </div>
+                        <ul class="cooperative-features">
+                            <li><i class="fas fa-check"></i> Organic certification</li>
+                            <li><i class="fas fa-check"></i> High-altitude premium</li>
+                            <li><i class="fas fa-check"></i> Herbal products</li>
+                            <li><i class="fas fa-check"></i> Beekeeping support</li>
+                        </ul>
+                        <div class="cooperative-actions">
+                            <button class="btn-apply" onclick="applyToCooperative('Himalayan Organic Growers')">
+                                <i class="fas fa-user-plus"></i>
+                                Apply to Join
+                            </button>
+                            <a href="#" class="btn-learn-more">
+                                <i class="fas fa-info-circle"></i>
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desert Agriculture Alliance -->
+                <div class="cooperative-card">
+                    <div class="cooperative-header">
+                        <div class="cooperative-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <h3>Desert Agriculture Alliance</h3>
+                        <div class="cooperative-meta">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Rajasthan</span>
+                        </div>
+                    </div>
+                    <div class="cooperative-body">
+                        <p class="cooperative-description">Innovative desert farming cooperative using drip irrigation, drought-resistant crops, and solar-powered farming techniques in arid regions.</p>
+                        <div class="cooperative-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">650</span>
+                                <span class="stat-label">Members</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">3,200</span>
+                                <span class="stat-label">Acres</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">₹9.8L</span>
+                                <span class="stat-label">Turnover</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">4.5★</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                        </div>
+                        <ul class="cooperative-features">
+                            <li><i class="fas fa-check"></i> Drip irrigation systems</li>
+                            <li><i class="fas fa-check"></i> Solar power integration</li>
+                            <li><i class="fas fa-check"></i> Drought-resistant crops</li>
+                            <li><i class="fas fa-check"></i> Water conservation</li>
+                        </ul>
+                        <div class="cooperative-actions">
+                            <button class="btn-apply" onclick="applyToCooperative('Desert Agriculture Alliance')">
+                                <i class="fas fa-user-plus"></i>
+                                Apply to Join
+                            </button>
+                            <a href="#" class="btn-learn-more">
+                                <i class="fas fa-info-circle"></i>
+                                Learn More
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="benefits-section" style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 3rem;">
-            <h2 style="text-align: center; margin-bottom: 2rem; color: #2c3e50;">{{ _('Cooperative Benefits') }}</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-                <div style="text-align: center;">
-                    <h3 style="color: #667eea;">{{ _('Higher Prices') }}</h3>
-                    <p>{{ _('Collective bargaining eliminates middlemen and ensures fair prices for your produce.') }}</p>
+        <section class="benefits-section">
+            <div class="benefits-container">
+                <div class="benefits-header">
+                    <h2>{{ _('Cooperative Benefits') }}</h2>
+                    <p>{{ _('Discover the advantages of joining a farming cooperative') }}</p>
                 </div>
-                <div style="text-align: center;">
-                    <h3 style="color: #667eea;">{{ _('Shared Resources') }}</h3>
-                    <p>{{ _('Access to farming equipment, storage facilities, and transportation at reduced costs.') }}</p>
-                </div>
-                <div style="text-align: center;">
-                    <h3 style="color: #667eea;">{{ _('Knowledge Sharing') }}</h3>
-                    <p>{{ _('Learn from experienced farmers and access training programs for better farming practices.') }}</p>
-                </div>
-                <div style="text-align: center;">
-                    <h3 style="color: #667eea;">{{ _('Market Access') }}</h3>
-                    <p>{{ _('Direct access to larger markets and export opportunities through cooperative networks.') }}</p>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <h3>{{ _('Higher Prices') }}</h3>
+                        <p>{{ _('Collective bargaining eliminates middlemen and ensures fair prices for your produce.') }}</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h3>{{ _('Shared Resources') }}</h3>
+                        <p>{{ _('Access to farming equipment, storage facilities, and transportation at reduced costs.') }}</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>{{ _('Knowledge Sharing') }}</h3>
+                        <p>{{ _('Learn from experienced farmers and access training programs for better farming practices.') }}</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>{{ _('Market Access') }}</h3>
+                        <p>{{ _('Direct access to larger markets and export opportunities through cooperative networks.') }}</p>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
     <footer class="main-footer">
-        <div class="container">
-            <p>{{ _('© 2025 AgriTech Platform - Building Fair Agriculture') }}</p>
-            <div class="footer-links">
-                <a href="{{ url_for('home') }}">{{ _('Home') }}</a>
-                <a href="#">{{ _('Privacy Policy') }}</a>
-                <a href="#">{{ _('Terms of Service') }}</a>
-                <a href="#">{{ _('Contact Us') }}</a>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>AgriTech</h3>
+                <p>{{ _('Building Fair Agriculture through technology and community support.') }}</p>
             </div>
+            <div class="footer-section">
+                <h3>{{ _('Quick Links') }}</h3>
+                <div class="footer-links">
+                    <a href="{{ url_for('home') }}">{{ _('Home') }}</a>
+                    <a href="{{ url_for('cooperatives') }}">{{ _('Cooperatives') }}</a>
+                    <a href="#">{{ _('Market Prices') }}</a>
+                    <a href="#">{{ _('Contact Us') }}</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>{{ _('Support') }}</h3>
+                <div class="footer-links">
+                    <a href="#">{{ _('Help Center') }}</a>
+                    <a href="#">{{ _('Privacy Policy') }}</a>
+                    <a href="#">{{ _('Terms of Service') }}</a>
+                    <a href="#">{{ _('Feedback') }}</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>{{ _('Connect') }}</h3>
+                <p>{{ _('Follow us for the latest updates in agricultural technology.') }}</p>
+                <div class="footer-links">
+                    <a href="#">{{ _('Facebook') }}</a>
+                    <a href="#">{{ _('Twitter') }}</a>
+                    <a href="#">{{ _('LinkedIn') }}</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>{{ _('© 2025 AgriTech Platform - Building Fair Agriculture') }}</p>
         </div>
     </footer>
 
@@ -190,15 +1113,51 @@
             navMenu.classList.toggle('show');
         }
 
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('btn-primary') && e.target.textContent.includes('Apply')) {
-                {% if session.user %}
-                alert('Application submitted! Our team will contact you within 24 hours.');
-                {% else %}
-                alert('Please login to apply for cooperative membership.');
-                window.location.href = '{{ url_for("login") }}';
-                {% endif %}
+        // Cooperative application function
+        function applyToCooperative(cooperativeName) {
+            {% if session.user %}
+            // User is logged in, show application form
+            const confirmed = confirm(`Apply to join ${cooperativeName}? Our team will review your application and contact you within 24 hours.`);
+            if (confirmed) {
+                // Here you could send an AJAX request to submit the application
+                alert('Application submitted successfully! Our cooperative team will contact you soon.');
+                // You could also update the button state
+                event.target.innerHTML = '<i class="fas fa-check"></i> Application Submitted';
+                event.target.disabled = true;
+                event.target.style.background = '#10b981';
             }
+            {% else %}
+            // User not logged in, redirect to login
+            const loginConfirmed = confirm('You need to be logged in to apply for cooperative membership. Would you like to login now?');
+            if (loginConfirmed) {
+                window.location.href = '{{ url_for("login") }}';
+            }
+            {% endif %}
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add hover effects for cooperative cards
+        document.querySelectorAll('.cooperative-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
         });
     </script>
 

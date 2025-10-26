@@ -570,6 +570,7 @@ class MarketDataService:
     def _get_indian_agri_prices(self) -> Dict:
         """
         Get real-time agricultural prices from Indian government API
+        Falls back to curated data if API is unreachable
         """
         try:
             config = self.api_configs['indian_agri_api']
@@ -580,6 +581,8 @@ class MarketDataService:
                 '9ef84268-d588-465a-a308-a864a43d0070',  # Weekly prices
                 '9e0a4c4c-8b8c-4e8c-8c8c-8c8c8c8c8c8c',  # Daily prices (if available)
             ]
+
+            api_successful = False
 
             for resource_id in resources:
                 try:
@@ -637,20 +640,34 @@ class MarketDataService:
                                         }
 
                         if prices:
+                            api_successful = True
                             break  # Stop if we got data from this resource
 
+                except requests.exceptions.RequestException as e:
+                    # Handle network-related errors specifically
+                    if "NameResolutionError" in str(e) or "getaddrinfo failed" in str(e):
+                        self.logger.warning(f"DNS resolution failed for Indian Agri API resource {resource_id}: {e}")
+                        self.logger.info("API endpoint appears to be unreachable, will use curated fallback data")
+                    else:
+                        self.logger.warning(f"Network error fetching from Indian Agri API resource {resource_id}: {e}")
+                    continue
                 except Exception as e:
                     self.logger.warning(f"Failed to fetch from Indian Agri API resource {resource_id}: {e}")
                     continue
 
-            if prices:
+            if prices and api_successful:
                 self.logger.info(f"Successfully fetched {len(prices)} real-time prices from Indian Agri API")
-
-            return prices
+                return prices
+            else:
+                # API failed or returned no data, use curated fallback
+                self.logger.info("Indian Agri API unavailable or returned no data, using curated fallback prices")
+                return self._get_curated_fallback_prices()['prices']
 
         except Exception as e:
             self.logger.error(f"Error in Indian Agri API: {e}")
-            return {}
+            # Return curated fallback data instead of empty dict
+            self.logger.info("Using curated fallback prices due to API error")
+            return self._get_curated_fallback_prices()['prices']
 
     def _map_commodity_to_turmeric(self, commodity: str) -> str:
         """

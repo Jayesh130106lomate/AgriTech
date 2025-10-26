@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('refresh-chart')?.addEventListener('click', loadMarketPrices);
     document.getElementById('trade-form')?.addEventListener('submit', handleTradeSubmit);
     document.getElementById('mine-block')?.addEventListener('click', mineBlock);
+    document.getElementById('preview-trade')?.addEventListener('click', previewTrade);
+    document.getElementById('confirm-trade')?.addEventListener('click', confirmTrade);
+
+    // Enhanced trade form event listeners
+    setupTradeFormListeners();
 
     // Auto-refresh chart every 30 seconds
     setInterval(loadMarketPrices, 30000);
@@ -400,19 +405,40 @@ function loadBlockchainStats() {
 function handleTradeSubmit(e) {
     e.preventDefault();
 
+    // Validate form
+    if (!validateTradeForm()) {
+        showError('Please correct the errors in the form before submitting.');
+        return;
+    }
+
+    const tradeTypeElement = document.querySelector('input[name="tradeType"]:checked');
+    const tradeType = tradeTypeElement ? tradeTypeElement.value : 'direct'; // Default to direct if none selected
     const turmericType = document.getElementById('turmeric_type').value;
+    const qualityGrade = document.getElementById('quality_grade').value;
     const quantity = document.getElementById('quantity').value;
     const price = document.getElementById('price').value;
+    const buyerType = document.getElementById('buyer_type').value;
     const buyer = document.getElementById('buyer').value;
+    const deliveryDate = document.getElementById('delivery_date').value;
+    const deliveryLocation = document.getElementById('delivery_location').value;
+    const tradeTerms = document.getElementById('trade_terms').value;
 
     const amount = quantity * price;
 
+    // Enhanced transaction data
     const transactionData = {
         sender: 'farmer_' + Date.now(), // In real app, use actual user ID
         recipient: buyer,
         amount: amount,
         crop_type: turmericType,
-        quantity: parseInt(quantity)
+        quantity: parseInt(quantity),
+        trade_type: tradeType,
+        quality_grade: qualityGrade,
+        buyer_type: buyerType,
+        delivery_date: deliveryDate || null,
+        delivery_location: deliveryLocation || null,
+        trade_terms: tradeTerms || null,
+        timestamp: new Date().toISOString()
     };
 
     // Check if online
@@ -421,17 +447,20 @@ function handleTradeSubmit(e) {
         storeOfflineTransaction(transactionData);
         const statusDiv = document.getElementById('transaction-status');
         statusDiv.className = 'transaction-status pending';
-        statusDiv.textContent = '📱 Transaction saved offline. Will be submitted when you\'re back online.';
+        statusDiv.textContent = '📱 Trade agreement saved offline. Will be submitted when you\'re back online.';
         document.getElementById('trade-form').reset();
         loadBlockchainStats(); // Update stats
         return;
     }
 
     // Online submission
-    submitTransaction(transactionData);
+    submitTradeTransaction(transactionData);
 }
 
-function submitTransaction(transactionData) {
+function submitTradeTransaction(transactionData) {
+    const submitBtn = document.querySelector('#trade-form button[type="submit"]');
+    setLoading(submitBtn, true);
+
     fetch('/transactions/new', {
         method: 'POST',
         headers: {
@@ -442,16 +471,34 @@ function submitTransaction(transactionData) {
     .then(response => response.json())
     .then(data => {
         const statusDiv = document.getElementById('transaction-status');
-        statusDiv.className = 'transaction-status success';
-        statusDiv.textContent = `Transaction created successfully! ${data.message}`;
-        document.getElementById('trade-form').reset();
+        if (response.ok) {
+            statusDiv.className = 'transaction-status success';
+            statusDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <strong>Trade Agreement Created Successfully!</strong><br>
+                Transaction recorded on blockchain. ${data.message}<br>
+                <small class="text-muted">Trade ID: ${transactionData.sender.split('_')[1]}</small>
+            `;
+            document.getElementById('trade-form').reset();
+            document.getElementById('trade-summary').style.display = 'none';
+
+            // Reset form to initial state
+            updateVarietyInfo();
+            updateQualityInfo();
+        } else {
+            statusDiv.className = 'transaction-status error';
+            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error creating trade agreement: ${data.message || 'Unknown error'}`;
+        }
         loadBlockchainStats(); // Update stats
     })
     .catch(error => {
-        console.error('Error creating transaction:', error);
+        console.error('Error creating trade transaction:', error);
         const statusDiv = document.getElementById('transaction-status');
         statusDiv.className = 'transaction-status error';
-        statusDiv.textContent = 'Error creating transaction. Please try again.';
+        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Network error. Please check your connection and try again.';
+    })
+    .finally(() => {
+        setLoading(submitBtn, false);
     });
 }
 
@@ -462,7 +509,8 @@ function storeOfflineTransaction(transactionData) {
         id: Date.now().toString(),
         data: transactionData,
         timestamp: new Date().toISOString(),
-        synced: false
+        synced: false,
+        type: 'trade_agreement'
     };
 
     offlineTransactions.push(offlineTransaction);
@@ -711,4 +759,394 @@ function updateOnlineStatus() {
             document.body.style.paddingTop = '0';
         }, 3000);
     }
+}
+
+// Enhanced trade form functionality
+function setupTradeFormListeners() {
+    // Turmeric variety change
+    document.getElementById('turmeric_type')?.addEventListener('change', updateVarietyInfo);
+
+    // Quality grade change
+    document.getElementById('quality_grade')?.addEventListener('change', updateQualityInfo);
+
+    // Quantity input
+    document.getElementById('quantity')?.addEventListener('input', updateTradeSummary);
+
+    // Price input
+    document.getElementById('price')?.addEventListener('input', updateTradeSummary);
+
+    // Real-time validation
+    const formControls = document.querySelectorAll('#trade-form input, #trade-form select');
+    formControls.forEach(control => {
+        control.addEventListener('blur', validateField);
+        control.addEventListener('input', clearFieldError);
+    });
+
+    // Trade type selector
+    document.querySelectorAll('input[name="tradeType"]').forEach(radio => {
+        radio.addEventListener('change', updateTradeType);
+    });
+
+    // Initialize with default values
+    updateVarietyInfo();
+    updateQualityInfo();
+    updateMarketStats();
+}
+
+function updateVarietyInfo() {
+    const variety = document.getElementById('turmeric_type').value;
+    const infoDiv = document.getElementById('variety-info');
+
+    const varietyData = {
+        'alleppey': { region: 'Kerala', quality: 'Premium', description: 'World-renowned for curcumin content and aroma' },
+        'erode': { region: 'Tamil Nadu', quality: 'Standard', description: 'Popular variety with good market acceptance' },
+        'nizamabad': { region: 'Telangana', quality: 'Organic', description: 'Local variety with organic certification focus' },
+        'rajapore': { region: 'Maharashtra', quality: 'Premium', description: 'High-quality variety with export potential' },
+        'duggirala': { region: 'Andhra Pradesh', quality: 'Standard', description: 'Reliable variety with consistent quality' },
+        'other': { region: 'Various', quality: 'Variable', description: 'Other varieties - please specify details' }
+    };
+
+    const data = varietyData[variety] || varietyData['other'];
+    infoDiv.innerHTML = `<small class="text-muted"><i class="fas fa-info-circle"></i> ${data.region} • ${data.quality} Quality • ${data.description}</small>`;
+
+    // Auto-set quality grade based on variety
+    if (variety && data.quality !== 'Variable') {
+        const qualityMap = { 'Premium': 'premium', 'Standard': 'standard', 'Organic': 'premium' };
+        document.getElementById('quality_grade').value = qualityMap[data.quality] || 'standard';
+        updateQualityInfo();
+    }
+}
+
+function updateQualityInfo() {
+    const quality = document.getElementById('quality_grade').value;
+    const infoDiv = document.getElementById('quality-info');
+
+    const qualityData = {
+        'premium': { premium: '₹15-25/kg', description: 'A+ grade with superior curcumin content' },
+        'standard': { premium: '₹5-15/kg', description: 'A grade with good market standards' },
+        'basic': { premium: '₹0-5/kg', description: 'B grade with basic quality requirements' }
+    };
+
+    const data = qualityData[quality];
+    if (data) {
+        infoDiv.innerHTML = `<small class="text-muted"><i class="fas fa-award"></i> Quality Premium: ${data.premium} • ${data.description}</small>`;
+    }
+}
+
+function updateTradeSummary() {
+    const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+    const price = parseFloat(document.getElementById('price').value) || 0;
+    const quality = document.getElementById('quality_grade').value;
+    const variety = document.getElementById('turmeric_type').value;
+
+    if (quantity > 0 && price > 0) {
+        const totalValue = quantity * price;
+
+        // Calculate quality premium
+        const qualityPremiums = { 'premium': 20, 'standard': 10, 'basic': 0 };
+        const qualityPremium = qualityPremiums[quality] || 0;
+        const qualityBonus = (totalValue * qualityPremium) / 100;
+
+        // Estimate profit (rough calculation)
+        const estimatedProfit = totalValue * 0.15; // 15% estimated profit margin
+
+        // Update summary
+        document.getElementById('total-value').textContent = `₹${totalValue.toLocaleString()}`;
+        document.getElementById('quality-premium').textContent = `₹${qualityBonus.toLocaleString()}`;
+        document.getElementById('estimated-profit').textContent = `₹${estimatedProfit.toLocaleString()}`;
+
+        // Market alignment check
+        const marketPrice = 275; // This should come from API
+        const alignment = price >= marketPrice * 0.9 && price <= marketPrice * 1.1 ? 'success' : 'warning';
+        const alignmentText = price >= marketPrice * 0.9 && price <= marketPrice * 1.1 ? 'Fair Price' : 'Price Alert';
+
+        document.getElementById('market-alignment').className = `badge bg-${alignment}`;
+        document.getElementById('market-alignment').textContent = alignmentText;
+
+        // Show summary
+        document.getElementById('trade-summary').style.display = 'block';
+
+        // Price suggestion
+        updatePriceSuggestion(price, marketPrice);
+    } else {
+        document.getElementById('trade-summary').style.display = 'none';
+    }
+}
+
+function updatePriceSuggestion(currentPrice, marketPrice) {
+    const suggestionDiv = document.getElementById('price-suggestion');
+
+    if (currentPrice < marketPrice * 0.9) {
+        suggestionDiv.innerHTML = `<i class="fas fa-arrow-up text-success"></i> Consider increasing to ₹${Math.round(marketPrice * 0.95)}+ for better returns`;
+        suggestionDiv.className = 'text-success';
+    } else if (currentPrice > marketPrice * 1.1) {
+        suggestionDiv.innerHTML = `<i class="fas fa-arrow-down text-warning"></i> Price seems high - market average is ₹${marketPrice}`;
+        suggestionDiv.className = 'text-warning';
+    } else {
+        suggestionDiv.innerHTML = `<i class="fas fa-check-circle text-success"></i> Price aligns well with market rates`;
+        suggestionDiv.className = 'text-success';
+    }
+}
+
+function updateMarketStats() {
+    // Update market statistics cards
+    fetch('/market_prices')
+        .then(response => response.json())
+        .then(data => {
+            if (data.prices && Object.keys(data.prices).length > 0) {
+                // Get the first available price or a specific variety
+                const firstPrice = Object.values(data.prices)[0];
+                const alleppeyPrice = data.prices.alleppey || firstPrice;
+
+                document.getElementById('current-market-price').textContent = `₹${alleppeyPrice.price}`;
+
+                // Calculate fair price (market price - 5% for farmer margin)
+                const fairPrice = Math.round(alleppeyPrice.price * 0.95);
+                document.getElementById('fair-price-suggestion').textContent = `₹${fairPrice}`;
+            }
+        })
+        .catch(error => console.error('Error updating market stats:', error));
+}
+
+function validateField(e) {
+    const field = e.target;
+    const value = field.value.trim();
+    const fieldName = field.name || field.id;
+
+    // Clear previous validation
+    field.classList.remove('is-valid', 'is-invalid');
+    const feedback = field.parentNode.querySelector('.invalid-feedback');
+    if (feedback) feedback.remove();
+
+    // Required field validation
+    if (field.hasAttribute('required') && !value) {
+        showFieldError(field, `${fieldName.replace('_', ' ').toUpperCase()} is required`);
+        return false;
+    }
+
+    // Specific validations
+    switch (field.id) {
+        case 'quantity':
+            if (value && (parseFloat(value) < 1 || parseFloat(value) > 10000)) {
+                showFieldError(field, 'Quantity must be between 1 and 10,000 kg');
+                return false;
+            }
+            break;
+        case 'price':
+            if (value && (parseFloat(value) < 1 || parseFloat(value) > 1000)) {
+                showFieldError(field, 'Price must be between ₹1 and ₹1000 per kg');
+                return false;
+            }
+            break;
+        case 'buyer':
+            if (value && value.length < 3) {
+                showFieldError(field, 'Buyer ID must be at least 3 characters long');
+                return false;
+            }
+            break;
+    }
+
+    if (value) {
+        field.classList.add('is-valid');
+    }
+
+    return true;
+}
+
+function showFieldError(field, message) {
+    field.classList.add('is-invalid');
+    let feedback = field.parentNode.querySelector('.invalid-feedback');
+    if (!feedback) {
+        feedback = document.createElement('div');
+        feedback.className = 'invalid-feedback';
+        field.parentNode.appendChild(feedback);
+    }
+    feedback.textContent = message;
+}
+
+function clearFieldError(e) {
+    const field = e.target;
+    field.classList.remove('is-invalid');
+    const feedback = field.parentNode.querySelector('.invalid-feedback');
+    if (feedback) {
+        feedback.remove();
+    }
+}
+
+function updateTradeType(e) {
+    const tradeType = e.target.value;
+    const form = document.getElementById('trade-form');
+
+    // Update form styling based on trade type
+    form.classList.remove('direct-trade', 'auction-trade', 'contract-trade');
+    form.classList.add(`${tradeType}-trade`);
+
+    // Show/hide relevant fields based on trade type
+    const deliveryDate = document.getElementById('delivery_date').parentNode;
+    const tradeTerms = document.getElementById('trade_terms').parentNode;
+
+    if (tradeType === 'contract') {
+        deliveryDate.style.display = 'block';
+        tradeTerms.style.display = 'block';
+    } else if (tradeType === 'auction') {
+        deliveryDate.style.display = 'block';
+        tradeTerms.style.display = 'none';
+    } else {
+        deliveryDate.style.display = 'none';
+        tradeTerms.style.display = 'none';
+    }
+}
+
+function previewTrade() {
+    // Validate form before preview
+    if (!validateTradeForm()) {
+        return;
+    }
+
+    // Collect form data
+    const formData = {
+        turmeric_type: document.getElementById('turmeric_type').value,
+        quality_grade: document.getElementById('quality_grade').value,
+        quantity: document.getElementById('quantity').value,
+        price: document.getElementById('price').value,
+        buyer_type: document.getElementById('buyer_type').value,
+        buyer: document.getElementById('buyer').value,
+        delivery_date: document.getElementById('delivery_date').value,
+        delivery_location: document.getElementById('delivery_location').value,
+        trade_terms: document.getElementById('trade_terms').value,
+        trade_type: document.querySelector('input[name="tradeType"]:checked').value
+    };
+
+    // Generate preview content
+    const previewContent = generateTradePreview(formData);
+
+    // Show modal
+    document.getElementById('trade-preview-content').innerHTML = previewContent;
+    const modal = new bootstrap.Modal(document.getElementById('tradePreviewModal'));
+    modal.show();
+}
+
+function generateTradePreview(data) {
+    const varietyNames = {
+        'alleppey': 'Alleppey Turmeric',
+        'erode': 'Erode Turmeric',
+        'nizamabad': 'Nizamabad Local',
+        'rajapore': 'Rajapore Turmeric',
+        'duggirala': 'Duggirala Turmeric',
+        'other': 'Other Variety'
+    };
+
+    const qualityNames = {
+        'premium': 'Premium Grade (A+)',
+        'standard': 'Standard Grade (A)',
+        'basic': 'Basic Grade (B)'
+    };
+
+    const buyerTypeNames = {
+        'cooperative': 'Farmer Cooperative',
+        'exporter': 'Export Company',
+        'processor': 'Processing Unit',
+        'retailer': 'Retail Buyer',
+        'wholesaler': 'Wholesale Trader'
+    };
+
+    const totalValue = parseFloat(data.quantity) * parseFloat(data.price);
+
+    return `
+        <div class="trade-preview-content">
+            <h6><i class="fas fa-file-contract"></i> Trade Agreement Details</h6>
+
+            <div class="preview-item">
+                <strong>Trade Type:</strong> ${data.trade_type.charAt(0).toUpperCase() + data.trade_type.slice(1)} Trade
+            </div>
+
+            <div class="preview-item">
+                <strong>Product:</strong> ${varietyNames[data.turmeric_type] || data.turmeric_type}
+            </div>
+
+            <div class="preview-item">
+                <strong>Quality Grade:</strong> ${qualityNames[data.quality_grade] || data.quality_grade}
+            </div>
+
+            <div class="preview-item">
+                <strong>Quantity:</strong> ${data.quantity} kg
+            </div>
+
+            <div class="preview-item">
+                <strong>Agreed Price:</strong> ₹${data.price}/kg
+            </div>
+
+            <div class="preview-item">
+                <strong>Total Value:</strong> ₹${totalValue.toLocaleString()}
+            </div>
+
+            <h6><i class="fas fa-user"></i> Buyer Information</h6>
+
+            <div class="preview-item">
+                <strong>Buyer Type:</strong> ${buyerTypeNames[data.buyer_type] || data.buyer_type}
+            </div>
+
+            <div class="preview-item">
+                <strong>Buyer ID:</strong> ${data.buyer}
+            </div>
+
+            ${data.delivery_date ? `
+            <h6><i class="fas fa-calendar"></i> Delivery Information</h6>
+
+            <div class="preview-item">
+                <strong>Delivery Date:</strong> ${new Date(data.delivery_date).toLocaleDateString()}
+            </div>
+
+            ${data.delivery_location ? `
+            <div class="preview-item">
+                <strong>Delivery Location:</strong> ${data.delivery_location}
+            </div>
+            ` : ''}
+            ` : ''}
+
+            ${data.trade_terms ? `
+            <h6><i class="fas fa-handshake"></i> Trade Terms</h6>
+
+            <div class="preview-item">
+                <strong>Special Terms:</strong> ${data.trade_terms}
+            </div>
+            ` : ''}
+
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-info-circle"></i>
+                <strong>Important:</strong> By confirming this trade, you agree to deliver the specified quantity and quality of turmeric at the agreed price. The transaction will be recorded on the blockchain for transparency and immutability.
+            </div>
+        </div>
+    `;
+}
+
+function validateTradeForm() {
+    let isValid = true;
+    const requiredFields = ['turmeric_type', 'quality_grade', 'quantity', 'price', 'buyer_type', 'buyer'];
+
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+            showFieldError(field, 'This field is required');
+            isValid = false;
+        }
+    });
+
+    // Check trade type specific requirements
+    const tradeType = document.querySelector('input[name="tradeType"]:checked').value;
+    if (tradeType === 'contract' && !document.getElementById('delivery_date').value) {
+        showFieldError(document.getElementById('delivery_date'), 'Delivery date is required for contract trades');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function confirmTrade() {
+    // Hide modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('tradePreviewModal'));
+    modal.hide();
+
+    // Submit the form
+    handleTradeSubmit(new Event('submit'));
 }

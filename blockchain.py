@@ -60,6 +60,11 @@ class Blockchain:
         if supply_chain_data:
             transaction['supply_chain'] = {
                 'batch_id': supply_chain_data.get('batch_id', ''),
+                'product_name': supply_chain_data.get('product_name', ''),
+                'farmer_id': supply_chain_data.get('farmer_id', ''),
+                'location': supply_chain_data.get('location', ''),
+                'quantity': supply_chain_data.get('quantity', ''),
+                'quality_score': supply_chain_data.get('quality_score', ''),
                 'farm_location': supply_chain_data.get('farm_location', ''),
                 'harvest_date': supply_chain_data.get('harvest_date', ''),
                 'quality_grade': supply_chain_data.get('quality_grade', 'standard'),

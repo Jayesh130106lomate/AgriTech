@@ -530,15 +530,18 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .profile-stats {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-menu {
                 gap: 1rem;
             }
 
-            .stat-item {
-                padding: 0.75rem;
-                min-width: 100px;
-                max-width: none;
-                flex: 1 1 calc(50% - 0.5rem);
+            .brand-text h1 {
+                font-size: 1.25rem;
             }
 
             .profile-name {
@@ -626,12 +629,100 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Small Home Button */
-        .home-button-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1050;
+        /* Enhanced Header Styles */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            color: white;
+            padding: 1rem 0;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .brand-logo i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .brand-text h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .brand-text p {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        .btn-login {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-login:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
 
         .home-button {
@@ -890,6 +981,32 @@
             <i class="fas fa-home"></i>
         </a>
     </div>
+
+    <!-- Enhanced Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="brand-section">
+                    <div class="brand-logo">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>AgriTech</h1>
+                        <p>Farmer Profile</p>
+                    </div>
+                </div>
+                <nav class="nav-menu">
+                    <a href="{{ url_for('home') }}" class="nav-link">{{ _('Home') }}</a>
+                    <a href="{{ url_for('cooperatives') }}" class="nav-link">{{ _('Cooperatives') }}</a>
+                    {% if session.user %}
+                    <a href="{{ url_for('logout') }}" class="nav-link">{{ _('Logout') }}</a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-login">{{ _('Login') }}</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </header>
 
     <!-- Enhanced Header -->
     <header class="profile-header">
@@ -1164,11 +1281,6 @@
         </div>
         {% endif %}
     </main>
-
-    <!-- Enhanced Voice Assistant -->
-    <div id="voice-assistant" class="voice-assistant" onclick="toggleVoiceAssistant()">
-        <i class="fas fa-microphone"></i>
-    </div>
 
     <!-- Enhanced Voice Modal -->
     <div id="voice-modal" class="voice-modal">
